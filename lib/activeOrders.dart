@@ -6,8 +6,11 @@ import 'package:http/http.dart' as http;
 class ActiveOrders extends StatelessWidget {
   const ActiveOrders();
   Future<List<Orders>> fetchItems(BuildContext context) async {
-    final response =
-        await http.get(Uri.parse("http://10.0.2.2:8080/orders/seller/1"));
+    final response = await http
+.get(Uri.parse("http://10.0.2.2:8080/orders"), headers: {
+"Authorization":
+"Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTcwMTg5NzQsImV4cCI6MTYxNzAyNjE3NCwiZW1haWwiOiJOYW1pdGhhQGdtYWlsLmNvbSIsIk5hbWUiOiJOYW1pdGhhIiwiQXZhaWxhYmxlIjpmYWxzZX0.s_TlDZ23-y9Gj791KBuFQfEQL7SQcn8mOaa9V0SzAM8"
+});
 
     if (response.statusCode == 200) {
       return ordersFromJson(response.body);
@@ -34,8 +37,9 @@ class ActiveOrders extends StatelessWidget {
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   Orders item = snapshot.data[index];
-                  if('${item.status}'=='Order Placed')
-                  
+                  print(item.status);
+                  if(item.status == 'Order Preparing')
+                  {
                   return Card(
                     color: Colors.blueGrey,
                     shadowColor: Colors.black,
@@ -43,7 +47,7 @@ class ActiveOrders extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         
-                          Text(item.status=="Order Placed"?'Orders':'Bad',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.orange),),
+                          Text(item.status=="Order Placed"?'Ordered':'Bad',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.orange),),
                        
                         Text(
                           '#00${item.oid}',
@@ -115,6 +119,10 @@ class ActiveOrders extends StatelessWidget {
                       ],
                     ),
                   );
+                  }
+                  else{
+                    return Container();
+                  }
                 },
               );
             }
