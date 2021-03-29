@@ -1,0 +1,75 @@
+
+[
+    {
+      "Order_ID":"#001",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Namita",
+      "Cust_Address":"Apartment no 45 Bhagya Nagar Belgaum",
+      "Order_Items":["Pizza","French Fries","Coca Cola"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#002",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Laxmi",
+      "Cust_Address":"Kala Mandir, Belgaum",
+      "Order_Items":["Butter Scotch IceC ream"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#003",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Abhishek",
+      "Cust_Address":" Ram Nagar ,Belgaum",
+      "Order_Items":["Pizza","Coca Cola"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#004",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Bob",
+      "Cust_Address":"Apartment no 45 Bhagya Nagar Belgaum",
+      "Order_Items":["Pizza","French Fries","Coca Cola"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#005",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Harry",
+      "Cust_Address":"Kala Mandir, Belgaum",
+      "Order_Items":["Butter Scotch IceC ream"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#006",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"John",
+      "Cust_Address":" Ram Nagar ,Belgaum",
+      "Order_Items":["Pizza","Coca Cola"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#007",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Bob",
+      "Cust_Address":"Apartment no 45 Bhagya Nagar Belgaum",
+      "Order_Items":["Pizza","French Fries","Coca Cola"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#008",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"Harry",
+      "Cust_Address":"Kala Mandir, Belgaum",
+      "Order_Items":["Butter Scotch IceC ream"],
+      "Order_status":"Pending"
+    },
+    {
+      "Order_ID":"#009",
+      "Genr_Date":"12/03/2021",
+      "Cust_name":"John",
+      "Cust_Address":" Ram Nagar ,Belgaum",
+      "Order_Items":["Pizza","Coca Cola"],
+      "Order_status":"Pending"
+    }
+  ]
