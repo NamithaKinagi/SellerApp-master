@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_http_post_request/RejectedOrders.dart';
 import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:provider/provider.dart';
 import 'PendingOrders.dart';
@@ -139,7 +140,24 @@ class _MenuDashboardState extends State<MenuDashboard>
                             'Order history',
                             style: TextStyle(color: Colors.white),
                           ),
-                        )
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        TextButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RejectedOrders()),
+                              );
+                            },
+                            label: Text(
+                              'Rejected Orders',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            icon: Icon(Icons.cancel, color: Colors.white))
                       ],
                     ),
                   ],
@@ -163,10 +181,16 @@ class _MenuDashboardState extends State<MenuDashboard>
                     color: Colors.white,
                   ),
                   SizedBox(width: 10),
-                  Text(
-                    'Logout',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                  TextButton.icon(
+                    onPressed: () {
+                      Provider.of<TokenModel>(context, listen: false)
+                          .addToken("");
+                    },
+                    icon: Icon(Icons.logout, color: Colors.white),
+                    label: Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ])
               ]),
@@ -251,6 +275,11 @@ class _MenuDashboardState extends State<MenuDashboard>
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     CategoriesScroller(),
+                    Text(
+                      '\n\nActive Orders',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                     ActiveOrders()
                   ],
                 ),

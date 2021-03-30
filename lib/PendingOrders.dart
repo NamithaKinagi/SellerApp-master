@@ -117,8 +117,11 @@ class CategoriesScroller extends StatelessWidget {
                                             const EdgeInsets.only(left: 100.0),
                                         child: IconButton(
                                           icon: Icon(Icons.more_horiz),
-                                          color: Colors.grey[800],
-                                          onPressed: () {/* Your code */},
+                                          color: Colors.white,
+                                          onPressed: () {
+                                            _settingModalBottomSheet(
+                                                context, item);
+                                          },
                                         ),
                                       ),
                                     ],
@@ -144,7 +147,9 @@ class CategoriesScroller extends StatelessWidget {
                                       children: [
                                         Icon(Icons.timer_outlined),
                                         Text(
-                                          '${item.date}',
+                                          item.date.hour.toString() +
+                                              ":" +
+                                              item.date.minute.toString(),
                                           style: TextStyle(color: Colors.white),
                                         ),
                                       ],
@@ -209,4 +214,38 @@ class CategoriesScroller extends StatelessWidget {
       );
     });
   }
+}
+
+void _settingModalBottomSheet(context, Orders item) {
+  showModalBottomSheet(
+      backgroundColor: Colors.white,
+      context: context,
+      builder: (BuildContext bc) {
+        return ListView.separated(
+            shrinkWrap: true,
+            separatorBuilder: (BuildContext context, int index) => Divider(),
+            itemCount: item.orderItems.length,
+            itemBuilder: (context, int index) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey[400],
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 10,
+                            color: Colors.grey[300],
+                            spreadRadius: 5)
+                      ]),
+                  child: new ListTile(
+                      leading: new Icon(Icons.music_note),
+                      title: new Text(item.orderItems[index].products.name),
+                      onTap: () => {}),
+                ),
+              );
+            });
+      });
 }

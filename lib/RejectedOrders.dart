@@ -1,15 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_http_post_request/model/orders.dart';
+import 'DashboardMenu.dart';
+import 'main.dart';
 import 'model/orders.dart';
 import 'package:http/http.dart' as http;
 
-class ActiveOrders extends StatelessWidget {
-  const ActiveOrders();
-  Future<List<Orders>> fetchItems(BuildContext context, String token) async {
-    final response = await http.get(Uri.parse("http://10.0.2.2:8080/orders"),
-        headers: {"Authorization": "Bearer " + token});
+class RejectedOrders extends StatelessWidget {
+  const RejectedOrders();
+  Future<List<Orders>> fetchItems(BuildContext context) async {
+    final response =
+        await http.get(Uri.parse("http://10.0.2.2:8080/orders"), headers: {
+      "Authorization":
+          "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTcwNzQzMTEsImV4cCI6MTYxNzA4MTUxMSwiZW1haWwiOiJOYW1pdGhhQGdtYWlsLmNvbSIsIk5hbWUiOiJOYW1pdGhhIiwiQXZhaWxhYmxlIjp0cnVlfQ.xIbFB3gvzZyemaG-TjgWMz0rKi8xxn2zAQukAWPYe8c"
+    });
 
     if (response.statusCode == 200) {
       return ordersFromJson(response.body);
@@ -23,12 +27,30 @@ class ActiveOrders extends StatelessWidget {
     final double categoryHeight =
         MediaQuery.of(context).size.height * 0.30 - 50;
 
-    return Consumer<TokenModel>(builder: (context, value, child) {
-      return Column(
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Colors.blueGrey,
+          title: Text(
+            'Rejected Orders',
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MenuDashboard()));
+              // do something
+            },
+          )),
+      body: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           FutureBuilder(
-            future: fetchItems(context, value.token),
+            future: fetchItems(context),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
@@ -38,7 +60,7 @@ class ActiveOrders extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     Orders item = snapshot.data[index];
                     print(item.status);
-                    if (item.status == 'Order Preparing') {
+                    if (item.status == 'Order Rejected') {
                       return Card(
                         color: Colors.blueGrey,
                         shadowColor: Colors.black,
@@ -46,9 +68,9 @@ class ActiveOrders extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item.status == "Order Placed"
-                                  ? 'Ordered'
-                                  : 'Order Preparing',
+                              item.status == "Order Rejected"
+                                  ? 'Rejected'
+                                  : 'Bad',
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -87,33 +109,7 @@ class ActiveOrders extends StatelessWidget {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 5),
                                     child: Row(
-                                      children: [
-                                        RaisedButton(
-                                          hoverColor: Colors.blueGrey,
-                                          onPressed: () {},
-                                          color: Colors.black,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15)),
-                                          child: Text("Mark as Done",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                        SizedBox(width: 5),
-                                        RaisedButton(
-                                          hoverColor: Colors.blueGrey,
-                                          onPressed: () {},
-                                          color: Colors.black,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15)),
-                                          child: Text("Update ETC",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold)),
-                                        ),
-                                      ],
+                                      children: [],
                                     ),
                                   ),
                                 ],
@@ -132,7 +128,7 @@ class ActiveOrders extends StatelessWidget {
             },
           ),
         ],
-      );
-    });
+      ),
+    );
   }
 }

@@ -12,7 +12,7 @@ class APIService {
 
   final storage = new FlutterSecureStorage();
   Future<LoginResponseModel> login(LoginRequestModel requestModel) async {
-    String url = "http://10.0.2.2:8080/login/seller";
+    Uri url = Uri.parse("http://10.0.2.2:8080/login/seller");
     Map<String, String> headers = {
       "Accept": "application/json",
       "content-type": "application/json"
