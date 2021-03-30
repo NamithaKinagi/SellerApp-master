@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_http_post_request/TokenModel.dart';
+import 'package:provider/provider.dart';
 import 'PendingOrders.dart';
 import 'activeOrders.dart';
 import 'package:http/http.dart' as http;
@@ -22,13 +24,12 @@ class _MenuDashboardState extends State<MenuDashboard>
   Animation<double> _scaleAnimation;
   Animation<double> _menuScaleAnimation;
   Animation<Offset> _slideAnimation;
-  Future<http.Response> updateAvailable(bool value) async {
+  Future<http.Response> updateAvailable(bool value, String token) async {
     final response = await http.put(
       Uri.parse("http://10.0.2.2:8080/update/seller"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization":
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTcwMTg5NzQsImV4cCI6MTYxNzAyNjE3NCwiZW1haWwiOiJOYW1pdGhhQGdtYWlsLmNvbSIsIk5hbWUiOiJOYW1pdGhhIiwiQXZhaWxhYmxlIjpmYWxzZX0.s_TlDZ23-y9Gj791KBuFQfEQL7SQcn8mOaa9V0SzAM8"
+        "Authorization": "Bearer " + token
       },
       body: jsonEncode(<String, bool>{
         'available': value,
@@ -66,17 +67,19 @@ class _MenuDashboardState extends State<MenuDashboard>
     Size size = MediaQuery.of(context).size;
     screenheight = size.height;
     screenwidth = size.width;
-    return Scaffold(
-      body: Stack(
-        children: [
-          menu(context),
-          dashboard(context),
-        ],
-      ),
-    );
+    return Consumer<TokenModel>(builder: (context, value, child) {
+      return Scaffold(
+        body: Stack(
+          children: [
+            menu(context, value.token),
+            dashboard(context, value.token),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget menu(context) {
+  Widget menu(context, token) {
     return SlideTransition(
       position: _slideAnimation,
       child: ScaleTransition(
@@ -172,7 +175,7 @@ class _MenuDashboardState extends State<MenuDashboard>
     );
   }
 
-  Widget dashboard(context) {
+  Widget dashboard(context, token) {
     print(isDrawerOpen);
     Size size = MediaQuery.of(context).size;
     screenheight = size.height;
@@ -229,10 +232,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                                 setState(() {
                                   isSwitched = value;
                                   print('Switch Status $isSwitched');
-                                  updateAvailable(
-                                    isSwitched
-                                  );
-                                  
+                                  updateAvailable(isSwitched, token);
                                 });
                               },
                               //activeTrackColor: Colors.lightGreenAccent,

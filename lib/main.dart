@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_http_post_request/DashboardMenu.dart';
+import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:flutter_http_post_request/pages/login_page.dart';
 import 'package:flutter_http_post_request/root_page.dart';
+import 'package:provider/provider.dart';
 
 //import 'pages/login_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => TokenModel(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -37,8 +39,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: LoginPage(),
+      home: RootPage(),
     );
   }
 }
-

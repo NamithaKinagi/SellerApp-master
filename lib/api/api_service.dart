@@ -1,9 +1,15 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../model/login_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class APIService {
+  build(BuildContext context) {}
+  APIService({context});
+
   final storage = new FlutterSecureStorage();
   Future<LoginResponseModel> login(LoginRequestModel requestModel) async {
     String url = "http://10.0.2.2:8080/login/seller";
@@ -22,15 +28,13 @@ class APIService {
 
     print(response.statusCode);
     if (response.statusCode == 200) {
-      print(response);
-      await storage.write(key: "token", value: json.decode(response.body)['token']);
-      print(json.decode(response.body)['token']);
+      await storage.write(
+          key: "token", value: json.decode(response.body)['token']);
+
       return LoginResponseModel.fromJson(
         json.decode(response.body),
       );
-      
-    } 
-    else {
+    } else {
       throw Exception('Failed to load data!');
     }
   }

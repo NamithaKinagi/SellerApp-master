@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_http_post_request/DashboardMenu.dart';
+import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:flutter_http_post_request/api/api_service.dart';
 import 'package:flutter_http_post_request/model/login_model.dart';
 import 'package:flutter_http_post_request/pages/home_page.dart';
+import 'package:provider/provider.dart';
 
 import '../ProgressHUD.dart';
 
@@ -97,8 +99,8 @@ class _LoginPageState extends State<LoginPage> {
                           onSaved: (input) =>
                               loginRequestModel.password = input,
                           //validator: (input) => input.length < 3
-                              //? "Password should be more than 3 characters"
-                              //: null,
+                          //? "Password should be more than 3 characters"
+                          //: null,
                           obscureText: hidePassword,
                           decoration: new InputDecoration(
                             hintText: "Password",
@@ -153,12 +155,15 @@ class _LoginPageState extends State<LoginPage> {
                                         content: Text("Login Successful"));
                                     scaffoldKey.currentState
                                         .showSnackBar(snackBar);
-                                    Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MenuDashboard(),
-                                        ),
-                                        (route) => false);
+                                    Provider.of<TokenModel>(context,
+                                            listen: false)
+                                        .addToken(value.token);
+                                    // Navigator.pushAndRemoveUntil(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //       builder: (context) => MenuDashboard(),
+                                    //     ),
+                                    //     (route) => false);
                                   } else {
                                     final snackBar =
                                         SnackBar(content: Text(value.error));
