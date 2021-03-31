@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Image Loader',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        
         fontFamily: 'Poppins',
         primaryColor: Colors.white,
         floatingActionButtonTheme: FloatingActionButtonThemeData(

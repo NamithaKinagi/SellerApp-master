@@ -277,21 +277,7 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                     ),
                   );
                 }),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Total Amount :' + '$total',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black),
-                  ),
-                ),
-              ],
-            )
+            
           ],
         );
       });
