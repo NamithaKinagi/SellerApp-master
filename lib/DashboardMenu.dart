@@ -7,6 +7,7 @@ import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:provider/provider.dart';
 import 'PendingOrders.dart';
 import 'activeOrders.dart';
+import 'api/api_service.dart';
 import 'package:http/http.dart' as http;
 
 class MenuDashboard extends StatefulWidget {
@@ -19,7 +20,7 @@ class _MenuDashboardState extends State<MenuDashboard>
   bool isSwitched = false;
   bool isDrawerOpen = false;
   double screenwidth, screenheight;
-
+SelleDetails apiServices= new SelleDetails();
   final Duration duration = const Duration(milliseconds: 300);
   AnimationController _controller;
   Animation<double> _scaleAnimation;
@@ -81,6 +82,7 @@ class _MenuDashboardState extends State<MenuDashboard>
   }
 
   Widget menu(context, token) {
+    
     return SlideTransition(
       position: _slideAnimation,
       child: ScaleTransition(
@@ -101,13 +103,22 @@ class _MenuDashboardState extends State<MenuDashboard>
                       children: [
                         Text(
                           'Welcome',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white,fontSize: 18),
                         ),
-                        Text(
-                          'Seller name',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
+                        FutureBuilder(
+                              future: apiServices.fetchName(context, token),
+                               builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(snapshot.data
+                            ,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold));
+                  }
+                  else
+
+                  {
+                    return CircularProgressIndicator();
+                  }
+                               }
+                            ),
                       ])
                 ]),
                 Column(
@@ -197,8 +208,8 @@ class _MenuDashboardState extends State<MenuDashboard>
         ),
       ),
     );
+  
   }
-
   Widget dashboard(context, token) {
     print(isDrawerOpen);
     Size size = MediaQuery.of(context).size;
@@ -208,8 +219,8 @@ class _MenuDashboardState extends State<MenuDashboard>
       duration: duration,
       top: 0,
       bottom: 0,
-      left: isDrawerOpen ? 0.6 * screenwidth : 0,
-      right: isDrawerOpen ? -0.2 * screenwidth : 0,
+      left: isDrawerOpen ? 0.5 * screenwidth : 0,
+      right: isDrawerOpen ? -0.2* screenwidth : 0,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Material(
@@ -221,7 +232,7 @@ class _MenuDashboardState extends State<MenuDashboard>
             child: Padding(
               padding: const EdgeInsets.only(left: 10, top: 30, bottom: 10),
               child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
+                   scrollDirection: Axis.vertical,
                 physics: ClampingScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +260,19 @@ class _MenuDashboardState extends State<MenuDashboard>
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10.0, 0.0, 5.0),
                           child: Column(children: [
-                            Text('Seller name'),
+                            FutureBuilder(
+                              future: apiServices.fetchName(context, token),
+                               builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(snapshot.data
+                            );
+                  }
+                  else
+                  {
+                    return CircularProgressIndicator();
+                  }
+                               }
+                            ),
                             Switch(
                               value: isSwitched,
                               onChanged: (value) {
@@ -276,11 +299,11 @@ class _MenuDashboardState extends State<MenuDashboard>
                     ),
                     CategoriesScroller(),
                     Text(
-                      '\n\nActive Orders',
+                      '\nActive Orders',
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    ActiveOrders()
+                    ActiveOrders(),
                   ],
                 ),
               ),

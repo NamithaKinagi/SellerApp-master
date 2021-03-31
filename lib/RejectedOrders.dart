@@ -4,29 +4,21 @@ import 'package:flutter_http_post_request/model/orders.dart';
 import 'DashboardMenu.dart';
 import 'main.dart';
 import 'model/orders.dart';
+import 'api/api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:http/http.dart' as http;
 
 class RejectedOrders extends StatelessWidget {
-  const RejectedOrders();
-  Future<List<Orders>> fetchItems(BuildContext context) async {
-    final response =
-        await http.get(Uri.parse("http://10.0.2.2:8080/orders"), headers: {
-      "Authorization":
-          "eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTcwNzQzMTEsImV4cCI6MTYxNzA4MTUxMSwiZW1haWwiOiJOYW1pdGhhQGdtYWlsLmNvbSIsIk5hbWUiOiJOYW1pdGhhIiwiQXZhaWxhYmxlIjp0cnVlfQ.xIbFB3gvzZyemaG-TjgWMz0rKi8xxn2zAQukAWPYe8c"
-    });
-
-    if (response.statusCode == 200) {
-      return ordersFromJson(response.body);
-    } else {
-      throw Exception();
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
+     OrderListings apiService = new OrderListings();
     final double categoryHeight =
         MediaQuery.of(context).size.height * 0.30 - 50;
 
+    return Consumer<TokenModel>(builder: (context, value, child) {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blueGrey,
@@ -46,11 +38,12 @@ class RejectedOrders extends StatelessWidget {
               // do something
             },
           )),
-      body: Column(
+      body:
+       Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           FutureBuilder(
-            future: fetchItems(context),
+            future: apiService.fetchItems(context,value.token),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
@@ -130,5 +123,6 @@ class RejectedOrders extends StatelessWidget {
         ],
       ),
     );
+    });
   }
 }

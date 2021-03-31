@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_http_post_request/TokenModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../model/login_model.dart';
+import '../model/orders.dart';
+import 'package:flutter_http_post_request/model/Seller.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class APIService {
@@ -36,6 +39,73 @@ class APIService {
       );
     } else {
       throw Exception('Failed to load data!');
+    }
+  }
+}
+
+class OrderListings {
+  build(BuildContext context) {}
+  OrderListings({context});
+  Future<List<Orders>> fetchItems(BuildContext context, String token) async {
+    final response = await http.get(Uri.parse("http://10.0.2.2:8080/orders"),
+        headers: {"Authorization": "Bearer " + token});
+
+    if (response.statusCode == 200) {
+      return ordersFromJson(response.body);
+    } else {
+      throw Exception();
+    }
+  }
+
+  Future<http.Response> changeOrderStatus(int oid, String token) async {
+    final response = await http.put(
+      Uri.parse("http://10.0.2.2:8080/orders/" + oid.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": "Bearer " + token
+      },
+      body: jsonEncode(<String, String>{
+        "status": "Order Preparing",
+      }),
+    );
+    if (response.statusCode == 200) {
+      print("Order status changed!");
+    } else {
+      print("Seller status update failed!");
+    }
+    return response;
+  }
+
+  Future<http.Response> orderRejected(int oid, String token) async {
+    final response = await http.put(
+      Uri.parse("http://10.0.2.2:8080/orders/" + oid.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": "Bearer " + token
+      },
+      body: jsonEncode(<String, String>{
+        "status": "Order Rejected",
+      }),
+    );
+    if (response.statusCode == 200) {
+      print("Order status changed to rejected !");
+    } else {
+      print("Seller status update failed!");
+    }
+    return response;
+  }
+}
+class SelleDetails{
+   build(BuildContext context) {}
+  SelleDetails({context});
+  Future<String> fetchName(BuildContext context, String token) async {
+    final response = await http.get(Uri.parse("http://10.0.2.2:8080/details/seller"),
+        headers: {"Authorization": "Bearer " + token});
+
+    if (response.statusCode == 200) {
+      return sellerFromJson(response.body).name;
+    } else {
+      throw Exception();
     }
   }
 }
