@@ -43,7 +43,7 @@ class APIService {
     }
   }
 
-  static Future<List<Orders>> fetchItems(BuildContext context, String token) async {
+  static Future<List<Orders>> fetchOrders(BuildContext context, String token) async {
     final response = await http.get(Uri.parse("http://10.0.2.2:8080/orders/seller"),
         headers: {"Authorization": "Bearer " + token});
     

@@ -23,7 +23,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
         builder: (context, value, child, val) {
       return Container(
         child: FutureBuilder(
-          future: APIService.fetchItems(context, value.token),
+          future: APIService.fetchOrders(context, value.token),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(

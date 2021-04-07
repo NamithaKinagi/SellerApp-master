@@ -42,7 +42,7 @@ class RejectedOrders extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           FutureBuilder(
-            future: APIService.fetchItems(context,value.token),
+            future: APIService.fetchOrders(context,value.token),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(

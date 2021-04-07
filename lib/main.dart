@@ -1,4 +1,4 @@
-import 'package:Seller_App/introductionScreen.dart';
+import 'package:Seller_App/Screens/introductionScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:Seller_App/dashboardMenu.dart';
 import 'package:introduction_screen/introduction_screen.dart';

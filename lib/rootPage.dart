@@ -3,7 +3,7 @@ import 'package:Seller_App/dashboardMenu.dart';
 import 'providers/tokenModel.dart';
 
 import 'package:provider/provider.dart';
-import 'package:Seller_App/introductionScreen.dart';
+import 'package:Seller_App/Screens/introductionScreen.dart';
 import 'dashboardMenu.dart';
 import 'activeOrders.dart';
 import 'activeOrders.dart';
