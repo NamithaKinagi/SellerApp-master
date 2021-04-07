@@ -3,10 +3,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
+import 'package:Seller_App/providers/tokenModel.dart';
+import 'package:Seller_App/providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
 import 'model/orders.dart';
-import 'api/api_service.dart';
+import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
 
 class CategoriesScroller extends StatefulWidget {
@@ -15,12 +16,12 @@ class CategoriesScroller extends StatefulWidget {
 }
 
 class _CategoriesScrollerState extends State<CategoriesScroller> {
-
+int count=0;
   @override
   Widget build(BuildContext context) {
-    OrderListings apiService = new OrderListings();
+  
     Size size = MediaQuery.of(context).size;
-    return Consumer<TokenModel>(builder: (context, value, child) {
+    return Consumer2<TokenModel,StatusUpdate>(builder: (context, value,child,val) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -29,19 +30,25 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
             width: size.height,
             decoration: BoxDecoration(color: Colors.transparent),
             child: FutureBuilder(
-              future: apiService.fetchItems(context, value.token),
+              future: APIService.fetchItems(context, value.token),
               builder: (context, snapshot) {
+                
                 if (snapshot.hasData) {
+                
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data.length,
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
                       Orders item = snapshot.data[index];
-                      print(item.status);
-                      print(item.oid);
+                      
+                      
                       if (item.status == 'Order Placed') {
-                        return Card(
+                        return GestureDetector(
+                         onTap: (){
+                           _settingModalBottomSheet(context, item);
+                         },
+                        child: Card(
                           elevation: 10,
                           color: Colors.blueGrey[600],
                           shadowColor: Colors.black12,
@@ -80,18 +87,7 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                                             color: Colors.orange),
                                       ),
                                     ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 100.0),
-                                      child: IconButton(
-                                        icon: Icon(Icons.more_horiz),
-                                        color: Colors.white,
-                                        onPressed: () {
-                                          _settingModalBottomSheet(
-                                              context, item);
-                                        },
-                                      ),
-                                    ),
+                                    
                                   ],
                                 ),
                               ),
@@ -147,7 +143,13 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                                       child: RaisedButton(
                                         hoverColor: Colors.blueGrey,
                                         onPressed: () {
-                                          apiService.changeOrderStatus(
+                                          setState(() {
+                                            
+                                          });
+                                          Provider.of<StatusUpdate>(context,
+                                            listen: false)
+                                        .addToken(item.status);
+                                          APIService.changeOrderStatus(
                                               item.oid, value.token);
                                         },
                                         color: Colors.black,
@@ -164,7 +166,10 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                                     RaisedButton(
                                       hoverColor: Colors.blueGrey,
                                       onPressed: () {
-                                        apiService.orderRejected(
+                                        setState(() {
+                                          
+                                        });
+                                        APIService.orderRejected(
                                             item.oid, value.token);
                                       },
                                       color: Colors.black,
@@ -181,11 +186,18 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                               )
                             ],
                           ),
+                        ),
                         );
-                      } else {
+                      } 
+                      else {
+                         
+                        
                         return Container();
                       }
+                      
                     },
+                    
+                    
                   );
                 }
                 return Center(child: CircularProgressIndicator());
@@ -196,8 +208,8 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
       );
     });
   }
-  void _settingModalBottomSheet(context, Orders item) {
-  double total = 0.0;
+void _settingModalBottomSheet(context, Orders item) {
+
   
   String url;
   showModalBottomSheet(
@@ -220,14 +232,12 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                 shrinkWrap: true,
                 separatorBuilder: (BuildContext context, int index) =>
                     Divider(),
-                itemCount: item.orderItems.length,
+                itemCount: item.orderItem.length,
                 itemBuilder: (context, int index) {
                 
-                    total += item.orderItems[index].products.price *
-                      item.orderItems[index].quantity;
-
                   
-                  switch (item.orderItems[index].products.name) {
+                  
+                  switch (item.orderItem[index].productName) {
                     case 'Pizza':
                       url = 'assets/pizza.jpeg';
                       break;
@@ -236,52 +246,60 @@ class _CategoriesScrollerState extends State<CategoriesScroller> {
                       break;
                     default:
                   }
-                  print(total);
+    
                   return Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.grey[700],
+                          
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
                           ),
                           boxShadow: [
                             BoxShadow(
-                                blurRadius: 10,
+                                blurRadius: 5,
                                 color: Colors.grey[300],
                                 spreadRadius: 5)
                           ]),
-                      child: Card(
-                        child: ListTile(
-                          leading: Image(image: new AssetImage(url)),
-                          title: Text(item.orderItems[index].products.name),
-                          subtitle: Row(
-                            children: [
-                              Text('SKU ID:' +
-                                  item.orderItems[index].products.skuId),
-                              SizedBox(width: 5),
-                              Text('Quantity : ' +
-                                  item.orderItems[index].quantity.toString()),
-                            ],
-                          ),
-                          trailing: Column(
-                            children: [
-                              Text('Price'),
-                              Text(item.orderItems[index].products.price
-                                  .toString())
-                                 
-                            ],
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+                        child: Card(
+                          child: ListTile(
+                            leading: Image(image: new AssetImage(url)),
+                            title: Text(item.orderItem[index].productName),
+                            subtitle: Row(
+                              children: [
+                                Text('SKU ID:' +
+                                    item.orderItem[index].skuId),
+                                SizedBox(width: 5),
+                                Text('Quantity : ' +
+                                    item.orderItem[index].quantity.toString()),
+                              ],
+                            ),
+                            trailing: Column(
+                              children: [
+                                Text('Price'),
+                                Text(item.orderItem[index].price
+                                    .toString())
+                                   
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   );
                 }),
-            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children:[
+                Text('Total Amount: '+item.totalPrice.toString(),style: TextStyle(fontWeight: FontWeight.bold),)
+              ]
+            )
           ],
         );
       });
 }
 
 }
-

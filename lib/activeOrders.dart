@@ -1,31 +1,39 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
+import 'package:Seller_App/providers/tokenModel.dart';
+import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'model/orders.dart';
-import 'api/api_service.dart';
+import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
 
-class ActiveOrders extends StatelessWidget {
+class ActiveOrders extends StatefulWidget {
+  @override
+  _ActiveOrdersState createState() => _ActiveOrdersState();
+}
 
+class _ActiveOrdersState extends State<ActiveOrders> {
+  CountDownController _controller = CountDownController();
+
+  bool _isPause = false;
   @override
   Widget build(BuildContext context) {
-    
-        OrderListings apiService = new OrderListings();
-    return Consumer<TokenModel>(builder: (context, value, child) {
-        
+    return Consumer2<TokenModel, StatusUpdate>(
+        builder: (context, value, child, val) {
       return Container(
         child: FutureBuilder(
-          future: apiService.fetchItems(context, value.token),
+          future: APIService.fetchItems(context, value.token),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.vertical,
                 itemCount: snapshot.data.length,
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   Orders item = snapshot.data[index];
-                  print(item.status);
+
                   if (item.status == 'Order Preparing') {
                     return Card(
                       color: Colors.blueGrey,
@@ -36,18 +44,66 @@ class ActiveOrders extends StatelessWidget {
                           Text(
                             item.status == "Order Placed"
                                 ? 'Ordered'
-                                : 'Order Preparing',
+                                : 'Order Preparing\n',
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.orange),
                           ),
-                          Text(
-                            '#00${item.oid}',
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '#00${item.oid}',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              CircularCountDownTimer(
+                                width: 40.0,
+                                height: 40.0,
+                                duration: 20,
+                                fillColor: Colors.amber,
+                                ringColor: Colors.white,
+                                controller: _controller,
+                                backgroundColor: Colors.white54,
+                                strokeWidth: 5.0,
+                                strokeCap: StrokeCap.round,
+                                isTimerTextShown: true,
+                                isReverse: true,
+                                onComplete: () {
+// Alert(
+
+// context: context,
+
+// title: 'Done',
+
+// style: AlertStyle(
+
+// isCloseButton: true,
+
+// isButtonVisible: false,
+
+// titleStyle: TextStyle(
+
+// color: Colors.white,
+
+// fontSize: 5.0,
+
+// ),
+
+// ),
+
+// type: AlertType.success)
+
+// .show();
+                                },
+                                textStyle: TextStyle(
+                                    fontSize: 15.0, color: Colors.black),
+                              ),
+                            ],
                           ),
                           SizedBox(
                             height: 5,
@@ -72,7 +128,9 @@ class ActiveOrders extends StatelessWidget {
                                     children: [
                                       RaisedButton(
                                         hoverColor: Colors.blueGrey,
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          setState(() {});
+                                        },
                                         color: Colors.black,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:

@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_http_post_request/RejectedOrders.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
+import 'package:Seller_App/rejectedOrders.dart';
+import 'providers/tokenModel.dart';
 import 'package:provider/provider.dart';
-import 'PendingOrders.dart';
+import 'pendingOrders.dart';
 import 'activeOrders.dart';
-import 'api/api_service.dart';
+import 'activeOrders.dart';
+import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
 
 class MenuDashboard extends StatefulWidget {
@@ -18,33 +19,15 @@ class MenuDashboard extends StatefulWidget {
 class _MenuDashboardState extends State<MenuDashboard>
     with SingleTickerProviderStateMixin {
   bool isSwitched = false;
+
   bool isDrawerOpen = false;
   double screenwidth, screenheight;
-SelleDetails apiServices= new SelleDetails();
+
   final Duration duration = const Duration(milliseconds: 300);
   AnimationController _controller;
   Animation<double> _scaleAnimation;
   Animation<double> _menuScaleAnimation;
   Animation<Offset> _slideAnimation;
-  Future<http.Response> updateAvailable(bool value, String token) async {
-    final response = await http.put(
-      Uri.parse("http://10.0.2.2:8080/update/seller"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer " + token
-      },
-      body: jsonEncode(<String, bool>{
-        'available': value,
-      }),
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print("Seller availability changed!");
-    } else {
-      print("Seller Availability update failed!");
-    }
-    return response;
-  }
 
   @override
   void initState() {
@@ -82,7 +65,6 @@ SelleDetails apiServices= new SelleDetails();
   }
 
   Widget menu(context, token) {
-    
     return SlideTransition(
       position: _slideAnimation,
       child: ScaleTransition(
@@ -103,22 +85,20 @@ SelleDetails apiServices= new SelleDetails();
                       children: [
                         Text(
                           'Welcome',
-                          style: TextStyle(color: Colors.white,fontSize: 18),
+                          style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                         FutureBuilder(
-                              future: apiServices.fetchName(context, token),
-                               builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(snapshot.data
-                            ,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold));
-                  }
-                  else
-
-                  {
-                    return CircularProgressIndicator();
-                  }
-                               }
-                            ),
+                            future: APIService.fetchName(context, token),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text(snapshot.data,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold));
+                              } else {
+                                return CircularProgressIndicator();
+                              }
+                            }),
                       ])
                 ]),
                 Column(
@@ -208,10 +188,10 @@ SelleDetails apiServices= new SelleDetails();
         ),
       ),
     );
-  
   }
+
   Widget dashboard(context, token) {
-    print(isDrawerOpen);
+   
     Size size = MediaQuery.of(context).size;
     screenheight = size.height;
     screenwidth = size.width;
@@ -220,7 +200,7 @@ SelleDetails apiServices= new SelleDetails();
       top: 0,
       bottom: 0,
       left: isDrawerOpen ? 0.5 * screenwidth : 0,
-      right: isDrawerOpen ? -0.2* screenwidth : 0,
+      right: isDrawerOpen ? -0.2 * screenwidth : 0,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Material(
@@ -229,83 +209,155 @@ SelleDetails apiServices= new SelleDetails();
               : BorderRadius.all(Radius.circular(0.0)),
           elevation: 9,
           child: Container(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10, top: 30, bottom: 10),
-              child: SingleChildScrollView(
-                   scrollDirection: Axis.vertical,
-                physics: ClampingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        isDrawerOpen
-                            ? IconButton(
-                                icon: Icon(Icons.arrow_back),
-                                onPressed: () {
-                                  setState(() {
-                                    isDrawerOpen = !isDrawerOpen;
-                                    _controller.reverse();
-                                  });
-                                })
-                            : IconButton(
-                                icon: Icon(Icons.menu),
-                                onPressed: () {
-                                  setState(() {
-                                    isDrawerOpen = !isDrawerOpen;
-                                    _controller.forward();
-                                  });
-                                }),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 10.0, 0.0, 5.0),
-                          child: Column(children: [
-                            FutureBuilder(
-                              future: apiServices.fetchName(context, token),
-                               builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(snapshot.data
-                            );
-                  }
-                  else
-                  {
-                    return CircularProgressIndicator();
-                  }
-                               }
+            padding: const EdgeInsets.only(left: 0, top: 30, bottom: 10),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(left: 10, top: 10, bottom: 20),
+                      child:
+                          ListView(scrollDirection: Axis.vertical, children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                isDrawerOpen
+                                    ? IconButton(
+                                        icon: Icon(Icons.arrow_back),
+                                        onPressed: () {
+                                          setState(() {
+                                            isDrawerOpen = !isDrawerOpen;
+                                            _controller.reverse();
+                                          });
+                                        })
+                                    : IconButton(
+                                        icon: Icon(Icons.menu),
+                                        onPressed: () {
+                                          setState(() {
+                                            isDrawerOpen = !isDrawerOpen;
+                                            _controller.forward();
+                                          });
+                                        }),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      0, 10.0, 0.0, 5.0),
+                                  child: Column(children: [
+                                    FutureBuilder(
+                                        future: APIService.fetchName(
+                                            context, token),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Text(snapshot.data);
+                                          } else {
+                                            return CircularProgressIndicator();
+                                          }
+                                        }),
+                                    FutureBuilder(
+                                        future: APIService.fetchAvail(
+                                            context, token),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            isSwitched = snapshot.data;
+                                            return Switch(
+                                              value: isSwitched,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  isSwitched = value;
+                                                
+                                                  APIService.updateAvailable(
+                                                      isSwitched, token);
+                                                  Widget cancelButton =
+                                                      FlatButton(
+                                                    child: Text("Cancel"),
+                                                    onPressed: () {
+                                                       setState(() {});
+                                                      isSwitched = !value;
+                                                      value=isSwitched;
+                                                     
+                                                      APIService
+                                                          .updateAvailable(
+                                                              value, token);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  );
+                                                  Widget continueButton =
+                                                      FlatButton(
+                                                    child: value
+                                                        ? Text("Go online")
+                                                        : Text('Go Offline'),
+                                                    onPressed: () {
+                                                      APIService
+                                                          .updateAvailable(
+                                                              value, token);
+                                                      Navigator.of(context,
+                                                              rootNavigator:
+                                                                  true)
+                                                          .pop();
+                                                      //updateAvailable(val,token);
+                                                    },
+                                                  );
+                                                  // set up the AlertDialog
+                                                  AlertDialog alert =
+                                                      AlertDialog(
+                                                    title: Text("AlertDialog"),
+                                                    content: value
+                                                        ? Text(
+                                                            "Are you sure you want to go online")
+                                                        : Text(
+                                                            "Are you sure you want to go Offline"),
+                                                    actions: [
+                                                      cancelButton,
+                                                      continueButton,
+                                                    ],
+                                                  );
+                                                  // show the dialog
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return alert;
+                                                    },
+                                                  );
+                                                });
+                                              },
+//activeTrackColor: Colors.lightGreenAccent,
+                                              activeColor: Colors.green,
+                                            );
+                                          } else
+                                            return CircularProgressIndicator();
+                                        })
+                                  ]),
+                                ),
+                                IconButton(
+                                    icon: Icon(Icons.notifications_active),
+                                    onPressed: null)
+                              ],
                             ),
-                            Switch(
-                              value: isSwitched,
-                              onChanged: (value) {
-                                setState(() {
-                                  isSwitched = value;
-                                  print('Switch Status $isSwitched');
-                                  updateAvailable(isSwitched, token);
-                                });
-                              },
-                              //activeTrackColor: Colors.lightGreenAccent,
-                              activeColor: Colors.green,
-                            )
-                          ]),
+                            Text(
+                              'Pending Orders',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            CategoriesScroller(),
+                            Text(
+                              '\nActive Orders',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            ActiveOrders()
+                          ],
                         ),
-                        IconButton(
-                            icon: Icon(Icons.notifications_active),
-                            onPressed: null)
-                      ],
+                      ]),
                     ),
-                    Text(
-                      'Pending Orders',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    CategoriesScroller(),
-                    Text(
-                      '\nActive Orders',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    ActiveOrders(),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -313,4 +365,44 @@ SelleDetails apiServices= new SelleDetails();
       ),
     );
   }
+
+  // showAlertDialog(token, bool val) {
+  //   // set up the buttons
+  //   Widget cancelButton = FlatButton(
+  //     child: Text("Cancel"),
+  //     onPressed: () {
+  //       isSwitched = !val;
+  //       setState(() {});
+  //       APIService.updateAvailable(val, token);
+  //       Navigator.of(context).pop();
+  //     },
+  //   );
+  //   Widget continueButton = FlatButton(
+  //     child: val ? Text("Go online") : Text('Go Offline'),
+  //     onPressed: () {
+  //       APIService.updateAvailable(val, token);
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //       //updateAvailable(val,token);
+  //     },
+  //   );
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     title: Text("AlertDialog"),
+  //     content: val
+  //         ? Text("Are you sure you want to go online")
+  //         : Text("Are you sure you want to go Offline"),
+  //     actions: [
+  //       cancelButton,
+  //       continueButton,
+  //     ],
+  //   );
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
+  
 }

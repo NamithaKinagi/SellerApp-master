@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_http_post_request/model/orders.dart';
-import 'DashboardMenu.dart';
+import 'package:Seller_App/model/orders.dart';
+import 'dashboardMenu.dart';
 import 'main.dart';
 import 'model/orders.dart';
-import 'api/api_service.dart';
+import 'package:Seller_App/api/apiService.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
+import 'package:Seller_App/providers/tokenModel.dart';
 import 'package:http/http.dart' as http;
 
 class RejectedOrders extends StatelessWidget {
@@ -14,7 +14,6 @@ class RejectedOrders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     OrderListings apiService = new OrderListings();
     final double categoryHeight =
         MediaQuery.of(context).size.height * 0.30 - 50;
 
@@ -43,7 +42,7 @@ class RejectedOrders extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           FutureBuilder(
-            future: apiService.fetchItems(context,value.token),
+            future: APIService.fetchItems(context,value.token),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return ListView.builder(
@@ -52,7 +51,7 @@ class RejectedOrders extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
                     Orders item = snapshot.data[index];
-                    print(item.status);
+                   
                     if (item.status == 'Order Rejected') {
                       return Card(
                         color: Colors.blueGrey,

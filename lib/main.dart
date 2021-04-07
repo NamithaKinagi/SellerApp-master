@@ -1,14 +1,22 @@
+import 'package:Seller_App/introductionScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_http_post_request/DashboardMenu.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
-import 'package:flutter_http_post_request/pages/login_page.dart';
-import 'package:flutter_http_post_request/root_page.dart';
+import 'package:Seller_App/dashboardMenu.dart';
+import 'package:introduction_screen/introduction_screen.dart';
+import 'providers/tokenModel.dart';
+import 'package:Seller_App/Screens/loginScreen.dart';
+import 'package:Seller_App/rootPage.dart';
+import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
 
 //import 'pages/login_page.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(create: (_) => TokenModel(), child: MyApp()));
+  runApp( MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => TokenModel()),
+      ChangeNotifierProvider(create: (_)=>StatusUpdate())
+    ],
+    child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -40,7 +48,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: RootPage(),
+      home: OnBoardingPage(),
     );
   }
 }

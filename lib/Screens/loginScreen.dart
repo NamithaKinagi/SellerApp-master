@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_http_post_request/DashboardMenu.dart';
-import 'package:flutter_http_post_request/TokenModel.dart';
-import 'package:flutter_http_post_request/api/api_service.dart';
-import 'package:flutter_http_post_request/model/login_model.dart';
-import 'package:flutter_http_post_request/pages/home_page.dart';
+import 'package:Seller_App/dashboardMenu.dart';
+import 'package:Seller_App/providers/tokenModel.dart';
+import 'package:Seller_App/api/apiService.dart';
+import 'package:Seller_App/model/loginModel.dart';
 import 'package:provider/provider.dart';
 
-import '../ProgressHUD.dart';
+import '../progressHUD.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -143,8 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                                 isApiCallProcess = true;
                               });
 
-                              APIService apiService = new APIService();
-                              apiService.login(loginRequestModel).then((value) {
+                            
+                              APIService.login(loginRequestModel).then((value) {
                                 if (value != null) {
                                   setState(() {
                                     isApiCallProcess = false;

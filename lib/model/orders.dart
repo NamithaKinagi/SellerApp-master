@@ -16,7 +16,8 @@ class Orders {
         this.date,
         this.status,
         this.source,
-        this.orderItems,
+        this.totalPrice,
+        this.orderItem,
     });
 
     int oid;
@@ -25,7 +26,8 @@ class Orders {
     DateTime date;
     String status;
     String source;
-    List<OrderItem> orderItems;
+    double totalPrice;
+    List<OrderItem> orderItem;
 
     factory Orders.fromJson(Map<String, dynamic> json) => Orders(
         oid: json["oid"],
@@ -34,7 +36,8 @@ class Orders {
         date: DateTime.parse(json["date"]),
         status: json["status"],
         source: json["source"],
-        orderItems: List<OrderItem>.from(json["orderItems"].map((x) => OrderItem.fromJson(x))),
+        totalPrice: json["totalPrice"],
+        orderItem: List<OrderItem>.from(json["orderItem"].map((x) => OrderItem.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -44,70 +47,43 @@ class Orders {
         "date": date.toIso8601String(),
         "status": status,
         "source": source,
-        "orderItems": List<dynamic>.from(orderItems.map((x) => x.toJson())),
+        "totalPrice": totalPrice,
+        "orderItem": List<dynamic>.from(orderItem.map((x) => x.toJson())),
     };
 }
 
 class OrderItem {
     OrderItem({
+        this.price,
+        this.skuId,
         this.itemId,
-        this.products,
         this.quantity,
+        this.productName,
+        this.orderCompletionTime,
     });
 
+    double price;
+    String skuId;
     int itemId;
-    Products products;
     int quantity;
+    String productName;
+    int orderCompletionTime;
 
     factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
-        itemId: json["item_id"],
-        products: Products.fromJson(json["products"]),
-        quantity: json["quantity"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "item_id": itemId,
-        "products": products.toJson(),
-        "quantity": quantity,
-    };
-}
-
-class Products {
-    Products({
-        this.pid,
-        this.date,
-        this.name,
-        this.skuId,
-        this.price,
-        this.available,
-        this.basicEta,
-    });
-
-    int pid;
-    DateTime date;
-    String name;
-    String skuId;
-    double price;
-    bool available;
-    int basicEta;
-
-    factory Products.fromJson(Map<String, dynamic> json) => Products(
-        pid: json["pid"],
-        date: DateTime.parse(json["date"]),
-        name: json["name"],
-        skuId: json["sku_id"],
         price: json["price"],
-        available: json["available"],
-        basicEta: json["basic_eta"],
+        skuId: json["skuId"],
+        itemId: json["itemId"],
+        quantity: json["quantity"],
+        productName: json["productName"],
+        orderCompletionTime: json["orderCompletionTime"],
     );
 
     Map<String, dynamic> toJson() => {
-        "pid": pid,
-        "date": date.toIso8601String(),
-        "name": name,
-        "sku_id": skuId,
         "price": price,
-        "available": available,
-        "basic_eta": basicEta,
+        "skuId": skuId,
+        "itemId": itemId,
+        "quantity": quantity,
+        "productName": productName,
+        "orderCompletionTime": orderCompletionTime,
     };
 }
