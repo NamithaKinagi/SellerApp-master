@@ -52,9 +52,7 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   String _token = "";
   _RootPageState() {
-    readStorage().then((val) => setState(() {
-          _token = val;
-        }));
+    readStorage().then((val) => Provider.of<TokenModel>(context, listen: false).addToken(val));
   }
 
   Future<String> readStorage() async {
@@ -68,7 +66,7 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     return Container(
       child: Consumer<TokenModel>(builder: (context, tokenModel, child) {
-        Provider.of<TokenModel>(context, listen: false).addToken(_token);
+        
         if (tokenModel.token == "")
           return LoginPage();
         else

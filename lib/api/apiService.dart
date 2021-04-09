@@ -137,7 +137,7 @@ class APIService {
     if (response.statusCode == 200) {
       return sellerFromJson(response.body).available;
     } else {
-//throw Exception();
+      
 
     }
   }

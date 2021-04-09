@@ -10,7 +10,8 @@ import 'activeOrders.dart';
 import 'activeOrders.dart';
 import 'api/apiService.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'ordersCount.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:http/http.dart' as http;
 
 class MenuDashboard extends StatefulWidget {
@@ -20,6 +21,7 @@ class MenuDashboard extends StatefulWidget {
 
 class _MenuDashboardState extends State<MenuDashboard>
     with SingleTickerProviderStateMixin {
+  final storage = new FlutterSecureStorage();
   bool isSwitched = false;
 
   bool isDrawerOpen = false;
@@ -175,7 +177,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                   ),
                   SizedBox(width: 10),
                   TextButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       Provider.of<TokenModel>(context, listen: false)
                           .addToken("");
                           await storage.delete(key: "token");
@@ -365,6 +367,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                             FutureBuilder(
                               future: APIService.fetchAvail(context, token),
                               builder: (context, snapshot) {
+                                if(snapshot.hasData){
                                 if (snapshot.data) {
                                   return Padding(
                                     padding: const EdgeInsets.all(16.0),
@@ -396,7 +399,8 @@ class _MenuDashboardState extends State<MenuDashboard>
                                       ),
                                     ),
                                   );
-                                }
+                                }}
+                                else return CircularProgressIndicator();
                               },
                             ),
                             Padding(

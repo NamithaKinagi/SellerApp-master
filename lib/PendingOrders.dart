@@ -10,9 +10,9 @@ import 'package:Seller_App/providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
 import 'model/orders.dart';
 import 'api/apiService.dart';
-import 'ordersCount.dart';
+
 import 'package:http/http.dart' as http;
-import 'package:smart_select/smart_select.dart';
+
 
 class PendingOrders extends StatefulWidget {
   @override
