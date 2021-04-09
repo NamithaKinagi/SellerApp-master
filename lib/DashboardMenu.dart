@@ -9,8 +9,9 @@ import 'pendingOrders.dart';
 import 'activeOrders.dart';
 import 'activeOrders.dart';
 import 'api/apiService.dart';
+import 'package:flutter_switch/flutter_switch.dart';
+import 'ordersCount.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MenuDashboard extends StatefulWidget {
   @override
@@ -19,7 +20,6 @@ class MenuDashboard extends StatefulWidget {
 
 class _MenuDashboardState extends State<MenuDashboard>
     with SingleTickerProviderStateMixin {
-  final storage = new FlutterSecureStorage();
   bool isSwitched = false;
 
   bool isDrawerOpen = false;
@@ -175,10 +175,10 @@ class _MenuDashboardState extends State<MenuDashboard>
                   ),
                   SizedBox(width: 10),
                   TextButton.icon(
-                    onPressed: () async {
+                    onPressed: () {
                       Provider.of<TokenModel>(context, listen: false)
                           .addToken("");
-                      await storage.delete(key: "token");
+                          await storage.delete(key: "token");
                     },
                     icon: Icon(Icons.logout, color: Colors.white),
                     label: Text(
@@ -194,10 +194,10 @@ class _MenuDashboardState extends State<MenuDashboard>
   }
 
   Widget dashboard(context, token) {
-   
     Size size = MediaQuery.of(context).size;
     screenheight = size.height;
     screenwidth = size.width;
+
     return AnimatedPositioned(
       duration: duration,
       top: 0,
@@ -212,7 +212,7 @@ class _MenuDashboardState extends State<MenuDashboard>
               : BorderRadius.all(Radius.circular(0.0)),
           elevation: 9,
           child: Container(
-            padding: const EdgeInsets.only(left: 0, top: 5, bottom: 10),
+            padding: const EdgeInsets.only(left: 0, top: 0, bottom: 0),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -220,7 +220,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                     height: MediaQuery.of(context).size.height,
                     child: Padding(
                       padding:
-                          const EdgeInsets.only(left: 10, top: 10, bottom: 20),
+                          const EdgeInsets.only(left: 0, top: 0, bottom: 0),
                       child:
                           ListView(scrollDirection: Axis.vertical, children: [
                         Column(
@@ -267,74 +267,93 @@ class _MenuDashboardState extends State<MenuDashboard>
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             isSwitched = snapshot.data;
-                                            return Switch(
-                                              value: isSwitched,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  isSwitched = value;
-                                                
-                                                  APIService.updateAvailable(
-                                                      isSwitched, token);
-                                                  Widget cancelButton =
-                                                      FlatButton(
-                                                    child: Text("Cancel"),
-                                                    onPressed: () {
-                                                       setState(() {});
-                                                      isSwitched = !value;
-                                                      value=isSwitched;
-                                                     
-                                                      APIService
-                                                          .updateAvailable(
-                                                              value, token);
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  );
-                                                  Widget continueButton =
-                                                      FlatButton(
-                                                    child: value
-                                                        ? Text("Go online")
-                                                        : Text('Go Offline'),
-                                                    onPressed: () {
-                                                      APIService
-                                                          .updateAvailable(
-                                                              value, token);
-                                                      Navigator.of(context,
-                                                              rootNavigator:
-                                                                  true)
-                                                          .pop();
-                                                      //updateAvailable(val,token);
-                                                    },
-                                                  );
-                                                  // set up the AlertDialog
-                                                  AlertDialog alert =
-                                                      AlertDialog(
-                                                    title: Text("AlertDialog"),
-                                                    content: value
-                                                        ? Text(
-                                                            "Are you sure you want to go online")
-                                                        : Text(
-                                                            "Are you sure you want to go Offline"),
-                                                    actions: [
-                                                      cancelButton,
-                                                      continueButton,
-                                                    ],
-                                                  );
-                                                  // show the dialog
-                                                  showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return alert;
-                                                    },
-                                                  );
+                                            return FlutterSwitch(
+                                                activeSwitchBorder: Border.all(
+                                                    width: 2,
+                                                    color: Colors.green),
+                                                activeColor: Colors.white,
+                                                activeToggleColor: Colors.green,
+                                                inactiveToggleBorder:
+                                                    Border.all(
+                                                        width: 3.0,
+                                                        color: Colors.black),
+                                                activeToggleBorder: Border.all(
+                                                    width: 2.0,
+                                                    color: Colors.green),
+                                                width: 45.0,
+                                                height: 20.0,
+                                                valueFontSize: 10.0,
+                                                activeTextColor: Colors.green,
+                                                toggleSize: 18.0,
+                                                value: isSwitched,
+                                                borderRadius: 15.0,
+                                                padding: 0.0,
+                                                showOnOff: true,
+                                                onToggle: (val) {
+                                                  setState(() {
+                                                    isSwitched = val;
+                                                    APIService.updateAvailable(
+                                                        isSwitched, token);
+                                                    Widget cancelButton =
+                                                        FlatButton(
+                                                      child: Text("Cancel"),
+                                                      onPressed: () {
+                                                        setState(() {});
+                                                        isSwitched = !val;
+                                                        val = isSwitched;
+
+                                                        APIService
+                                                            .updateAvailable(
+                                                                val, token);
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    );
+                                                    Widget continueButton =
+                                                        FlatButton(
+                                                      child: val
+                                                          ? Text("Go online")
+                                                          : Text('Go Offline'),
+                                                      onPressed: () {
+                                                        setState(() {});
+                                                        APIService
+                                                            .updateAvailable(
+                                                                val, token);
+                                                        Navigator.of(context,
+                                                                rootNavigator:
+                                                                    true)
+                                                            .pop();
+                                                        //updateAvailable(val,token);
+                                                      },
+                                                    );
+                                                    // set up the AlertDialog
+                                                    AlertDialog alert =
+                                                        AlertDialog(
+                                                      title:
+                                                          Text("AlertDialog"),
+                                                      content: val
+                                                          ? Text(
+                                                              "Are you sure you want to go online")
+                                                          : Text(
+                                                              "Are you sure you want to go Offline"),
+                                                      actions: [
+                                                        cancelButton,
+                                                        continueButton,
+                                                      ],
+                                                    );
+                                                    // show the dialog
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext
+                                                          context) {
+                                                        return alert;
+                                                      },
+                                                    );
+                                                  });
                                                 });
-                                              },
-//activeTrackColor: Colors.lightGreenAccent,
-                                              activeColor: Colors.green,
-                                            );
-                                          } else
+                                          } else {
                                             return CircularProgressIndicator();
+                                          }
                                         })
                                   ]),
                                 ),
@@ -343,18 +362,57 @@ class _MenuDashboardState extends State<MenuDashboard>
                                     onPressed: null)
                               ],
                             ),
-                            Text(
-                              'Pending Orders',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            FutureBuilder(
+                              future: APIService.fetchAvail(context, token),
+                              builder: (context, snapshot) {
+                                if (snapshot.data) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Pending Orders',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        PendingOrders(),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Container(
+                                        height: 200,
+                                        child: Center(
+                                            child: Text(
+                                          'You cant receive orders as you are offline ,if you have any pending orders please fulfill them ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
+                                        )),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
-                            CategoriesScroller(),
-                            Text(
-                              '\nActive Orders',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    '\nActive Orders',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  ActiveOrders()
+                                ],
+                              ),
                             ),
-                            ActiveOrders()
                           ],
                         ),
                       ]),
@@ -407,5 +465,5 @@ class _MenuDashboardState extends State<MenuDashboard>
   //     },
   //   );
   // }
-  
+
 }

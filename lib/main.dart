@@ -1,4 +1,5 @@
 import 'package:Seller_App/Screens/introductionScreen.dart';
+import 'package:Seller_App/providers/rejectionReason.dart';
 import 'package:flutter/material.dart';
 import 'package:Seller_App/dashboardMenu.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -8,13 +9,18 @@ import 'package:Seller_App/rootPage.dart';
 import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
 
+import 'rootPage.dart';
+
 //import 'pages/login_page.dart';
 
 void main() {
   runApp( MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => TokenModel()),
-      ChangeNotifierProvider(create: (_)=>StatusUpdate())
+      ChangeNotifierProvider(create: (_)=>StatusUpdate()),
+      ChangeNotifierProvider<RejectionReasons>(
+        create: (_) => RejectionReasons(),
+      ),
     ],
     child: MyApp()));
 }
