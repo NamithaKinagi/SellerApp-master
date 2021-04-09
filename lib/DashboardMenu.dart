@@ -10,6 +10,7 @@ import 'activeOrders.dart';
 import 'activeOrders.dart';
 import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MenuDashboard extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class MenuDashboard extends StatefulWidget {
 
 class _MenuDashboardState extends State<MenuDashboard>
     with SingleTickerProviderStateMixin {
+  final storage = new FlutterSecureStorage();
   bool isSwitched = false;
 
   bool isDrawerOpen = false;
@@ -173,9 +175,10 @@ class _MenuDashboardState extends State<MenuDashboard>
                   ),
                   SizedBox(width: 10),
                   TextButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       Provider.of<TokenModel>(context, listen: false)
                           .addToken("");
+                      await storage.delete(key: "token");
                     },
                     icon: Icon(Icons.logout, color: Colors.white),
                     label: Text(
@@ -209,7 +212,7 @@ class _MenuDashboardState extends State<MenuDashboard>
               : BorderRadius.all(Radius.circular(0.0)),
           elevation: 9,
           child: Container(
-            padding: const EdgeInsets.only(left: 0, top: 30, bottom: 10),
+            padding: const EdgeInsets.only(left: 0, top: 5, bottom: 10),
             child: SingleChildScrollView(
               child: Column(
                 children: [
