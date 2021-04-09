@@ -39,7 +39,9 @@ class APIService {
         json.decode(response.body),
       );
     } else {
-      throw Exception('Failed to load data!');
+      return LoginResponseModel.fromJson(
+        json.decode(response.body),
+      );
     }
   }
 
