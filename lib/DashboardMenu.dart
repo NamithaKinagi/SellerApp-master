@@ -27,6 +27,8 @@ class _MenuDashboardState extends State<MenuDashboard>
   bool isDrawerOpen = false;
   double screenwidth, screenheight;
 
+  
+
   final Duration duration = const Duration(milliseconds: 300);
   AnimationController _controller;
   Animation<double> _scaleAnimation;
@@ -214,6 +216,7 @@ class _MenuDashboardState extends State<MenuDashboard>
               : BorderRadius.all(Radius.circular(0.0)),
           elevation: 9,
           child: Container(
+            color: Colors.lime[200],
             padding: const EdgeInsets.only(left: 0, top: 0, bottom: 0),
             child: SingleChildScrollView(
               child: Column(
@@ -366,6 +369,40 @@ class _MenuDashboardState extends State<MenuDashboard>
                             FutureBuilder(
                               future: APIService.fetchAvail(context, token),
                               builder: (context, snapshot) {
+
+                                if(snapshot.hasData){
+                                if (snapshot.data) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left:8, bottom:16, top:8),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'Pending Orders',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 16, top:8),
+                                          child: PendingOrders(),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Container(
+                                        height: 200,
+                                        child: Center(
+                                            child: Text(
+                                          'You cant receive orders as you are offline ,if you have any pending orders please fulfill them ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
+                                        )),
+
                                 if (snapshot.hasData) {
                                   if (snapshot.data) {
                                     return Padding(
@@ -404,6 +441,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                                             ]),
                                           ),
                                         ),
+
                                       ),
                                     );
                                   }
@@ -412,17 +450,22 @@ class _MenuDashboardState extends State<MenuDashboard>
                               },
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '\nActive Orders',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  ActiveOrders()
-                                ],
+                              padding: const EdgeInsets.all(0.0),
+                              child: Container(
+                                width: screenwidth,
+                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30),),
+                                child: Column(
+                                  
+                                  children: [
+                                    Text(
+                                      '\nActive Orders',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    ActiveOrders()
+                                  ],
+                                ),
                               ),
                             ),
                           ],
