@@ -7,7 +7,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'model/orders.dart';
 import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
-
+import 'orderDetails.dart';
 class ActiveOrders extends StatefulWidget {
   @override
   _ActiveOrdersState createState() => _ActiveOrdersState();
@@ -15,8 +15,7 @@ class ActiveOrders extends StatefulWidget {
 
 class _ActiveOrdersState extends State<ActiveOrders> {
   CountDownController _controller = CountDownController();
-
-  bool _isPause = false;
+OrderDetail orders=new OrderDetail();
   @override
   Widget build(BuildContext context) {
     return Consumer2<TokenModel, StatusUpdate>(
@@ -35,7 +34,13 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                   Orders item = snapshot.data[index];
 
                   if (item.status == 'Order Preparing') {
-                    return Card(
+                    return GestureDetector(
+                          onTap: () {
+                            
+                          orders.settingModalBottomSheet(context, item);
+                          
+                          },
+                    child: Card(
                       color: Colors.blueGrey,
                       shadowColor: Colors.black,
                       child: Column(
@@ -161,6 +166,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                           )
                         ],
                       ),
+                    ),
                     );
                   } else {
                     return Container();
