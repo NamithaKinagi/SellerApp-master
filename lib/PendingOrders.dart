@@ -11,8 +11,10 @@ import 'package:provider/provider.dart';
 import 'model/orders.dart';
 import 'api/apiService.dart';
 import 'orderDetails.dart';
-
 import 'package:http/http.dart' as http;
+
+import 'orderDetails.dart';
+import 'orderDetails.dart';
 
 class PendingOrders extends StatefulWidget {
   @override
@@ -23,7 +25,7 @@ class _PendingOrdersState extends State<PendingOrders> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    OrderDetail orders=new OrderDetail();
     String url;
 
     return Consumer2<TokenModel, StatusUpdate>(
@@ -53,7 +55,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                   if (item.status == 'Order Placed') {
                     return GestureDetector(
                       onTap: () {
-                        _settingModalBottomSheet(context, item);
+                        orders.settingModalBottomSheet(context, item);
                       },
                       child: Card(
                         elevation: 10,
@@ -88,83 +90,17 @@ class _PendingOrdersState extends State<PendingOrders> {
                                       MainAxisAlignment.spaceBetween,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      width: 200,
-                                      height: 75,
-                                      child: FittedBox(
-                                        child: Image(
-                                          image: new AssetImage(url),
-
-  OrderDetail orders=new OrderDetail();
-    return Consumer2<TokenModel, StatusUpdate>(
-        builder: (context, value, child, val) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            height: 140,
-            width: size.height,
-            decoration: BoxDecoration(color: Colors.transparent),
-            child: FutureBuilder(
-              future: APIService.fetchOrders(context, value.token),
-              builder: (context, snapshot) {
-                
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      Orders item = snapshot.data[index];
-                      
-                      if (item.status == 'Order Placed') {
-                        return GestureDetector(
-                          onTap: () {
-                            
-                          orders.settingModalBottomSheet(context, item);
-                          
-                          },
-                          child: Card(
-                            elevation: 10,
-                            color: Colors.blueGrey[600],
-                            shadowColor: Colors.black12,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  decoration: new BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey[400],
-                                        blurRadius: 45.0, // soften the shadow
-                                        spreadRadius: 5.0, //extend the shadow
-                                        offset: Offset(
-                                          5.0, // Move to right 10  horizontally
-                                          15.0, // Move to bottom 10 Vertically
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        width: 150,
+                                        height: 75,
+                                        child: FittedBox(
+                                          child: Image(
+                                            image: new AssetImage(url),
+                                          ),
+                                          fit: BoxFit.fill,
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  height: 30,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 7.0),
-                                        child: Text(
-                                          item.status == "Order Placed"
-                                              ? 'Ordered'
-                                              : 'Bad',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.orange),
-
-                                        ),
-                                        fit: BoxFit.fill,
                                       ),
                                     ),
                                     Padding(
@@ -267,7 +203,7 @@ class _PendingOrdersState extends State<PendingOrders> {
     });
   }
 
-  
+
   _showRejectionchoiceDialog(Orders item, token) => showDialog(
       context: context,
       builder: (context) {

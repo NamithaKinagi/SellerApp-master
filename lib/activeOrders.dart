@@ -1,13 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Seller_App/providers/tokenModel.dart';
+import 'orderDetails.dart';
+import 'orderDetails.dart';
 import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'model/orders.dart';
+import 'orderDetails.dart';
 import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
-import 'orderDetails.dart';
+
 class ActiveOrders extends StatefulWidget {
   @override
   _ActiveOrdersState createState() => _ActiveOrdersState();
@@ -15,12 +18,9 @@ class ActiveOrders extends StatefulWidget {
 
 class _ActiveOrdersState extends State<ActiveOrders> {
   CountDownController _controller = CountDownController();
-
   String url;
+  OrderDetail orders=new OrderDetail();
   bool _isPause = false;
-
-OrderDetail orders=new OrderDetail();
-
   @override
   Widget build(BuildContext context) {
     return Consumer2<TokenModel, StatusUpdate>(
@@ -48,8 +48,13 @@ OrderDetail orders=new OrderDetail();
                   }
 
                   if (item.status == 'Order Preparing') {
-
-                    return Padding(
+                    return GestureDetector(
+                          onTap: () {
+                            
+                          orders.settingModalBottomSheet(context, item);
+                          
+                          },
+                    child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Card(
                         elevation: 10,
@@ -61,31 +66,6 @@ OrderDetail orders=new OrderDetail();
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
-
-                    return GestureDetector(
-                          onTap: () {
-                            
-                          orders.settingModalBottomSheet(context, item);
-                          
-                          },
-                    child: Card(
-                      color: Colors.blueGrey,
-                      shadowColor: Colors.black,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.status == "Order Placed"
-                                ? 'Ordered'
-                                : 'Order Preparing\n',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.orange),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Text(
@@ -106,15 +86,15 @@ OrderDetail orders=new OrderDetail();
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
-                                      width: 200,
-                                      height: 75,
-                                      child: FittedBox(
-                                        child: Image(
-                                          image: new AssetImage(url),
-                                        ),
-                                        fit: BoxFit.fill,
+                                        height: 75,
+                                        width: 180,
+                                        decoration: new BoxDecoration(
+                                            borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0)),
+                                            image: new DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: AssetImage(url))),
                                       ),
-                                    ),
                                     CircularCountDownTimer(
                                       width: 60.0,
                                       height: 60.0,

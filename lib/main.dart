@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           elevation: 0,
           foregroundColor: Colors.white,
         ),
-        accentColor: Colors.blueGrey,
+        accentColor: Color(0xff393E43),
         textTheme: TextTheme(
           headline1: TextStyle(fontSize: 22.0, color: Colors.blueGrey),
           headline2: TextStyle(

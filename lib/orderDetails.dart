@@ -20,7 +20,7 @@ class OrderDetail {
               child: Container(
                 child: buildBottomSheet(item),
                 decoration: BoxDecoration(
-                    color: Color(0xff64A7B4),
+                    color: Color(0xffCCCCCD),
                     borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(40),
                             topRight: Radius.circular(40))),
@@ -58,7 +58,7 @@ class OrderDetail {
                         thickness: 4,
                         indent: 130,
                         endIndent: 130,
-                        color: Color(0xff3E8F8F),
+                        color: Color(0xff393E43),
                       ),
                     ],
                   ),
@@ -71,7 +71,18 @@ class OrderDetail {
                     Icons.account_circle_sharp,
                     size: 60,
                   ),
-                  Text(item.customer,style: TextStyle(fontSize:16,fontWeight: FontWeight.w600 ),)
+                  SizedBox(
+                    width:10,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item.customer,style: TextStyle(fontSize:22,fontWeight: FontWeight.bold ),),
+                      Text('Customer Name',style: TextStyle(fontSize:18,fontWeight: FontWeight.w200 ),),
+                      
+                    ],
+                  )
                 ]),
               ),
               const Divider(
@@ -159,16 +170,13 @@ class OrderDetail {
                                     SizedBox(width: 5),
                                   ]),
                               Container(
-                                  decoration: new BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(20.0)),
-                                      color: Colors.white),
+                                  
                                   height: 35,
                                   width: 87,
                                   child: Container(
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                        shape: BoxShape.circle, color: Color(0xff64A7B4)),
+                                        shape: BoxShape.circle, color: Colors.white),
                                     child: Text(
                                       item.orderItem[index].quantity.toString(),
                                       style: TextStyle(fontSize: 24,
@@ -205,7 +213,10 @@ class OrderDetail {
                         padding: const EdgeInsets.all(10.0),
                         child: Column(
                           children: [
-                            Text('Items',style: TextStyle(fontSize: 20),),
+                            Padding(
+                              padding: const EdgeInsets.only(left:8.0),
+                              child: Text('Items',style: TextStyle(fontSize: 20),),
+                            ),
                             
                           ],
                         ),
@@ -227,7 +238,7 @@ class OrderDetail {
                               children:[
                                 Text('\$'+item.totalPrice.toString(),style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),),
                                
-                                Center(child: Text('Total',style: TextStyle(fontSize: 14),)),
+                                Center(child: Text('Total',style: TextStyle(fontSize: 18,fontWeight: FontWeight.w300),)),
                                 
                               ]
                             ),
