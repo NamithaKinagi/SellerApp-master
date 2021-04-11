@@ -182,7 +182,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                     onPressed: () async {
                       Provider.of<TokenModel>(context, listen: false)
                           .addToken("");
-                          await storage.delete(key: "token");
+                      await storage.delete(key: "token");
                     },
                     icon: Icon(Icons.logout, color: Colors.white),
                     label: Text(
@@ -297,8 +297,8 @@ class _MenuDashboardState extends State<MenuDashboard>
                                                 onToggle: (val) {
                                                   setState(() {
                                                     isSwitched = val;
-                                                    APIService.updateAvailable(
-                                                        isSwitched, token);
+                                                    // APIService.updateAvailable(
+                                                    //     isSwitched, token);
                                                     Widget cancelButton =
                                                         FlatButton(
                                                       child: Text("Cancel"),
@@ -334,8 +334,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                                                     // set up the AlertDialog
                                                     AlertDialog alert =
                                                         AlertDialog(
-                                                      title:
-                                                          Text("AlertDialog"),
+                                                      title: Text("Warning!"),
                                                       content: val
                                                           ? Text(
                                                               "Are you sure you want to go online")
@@ -370,6 +369,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                             FutureBuilder(
                               future: APIService.fetchAvail(context, token),
                               builder: (context, snapshot) {
+
                                 if(snapshot.hasData){
                                 if (snapshot.data) {
                                   return Padding(
@@ -402,11 +402,51 @@ class _MenuDashboardState extends State<MenuDashboard>
                                               fontWeight: FontWeight.bold,
                                               fontSize: 18),
                                         )),
+
+                                if (snapshot.hasData) {
+                                  if (snapshot.data) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Pending Orders',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          PendingOrders(),
+                                        ],
                                       ),
-                                    ),
-                                  );
-                                }}
-                                else return CircularProgressIndicator();
+                                    );
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+                                        child: Card(
+                                          color: Colors.redAccent[100],
+                                          elevation: 10,
+                                          child: Container(
+                                            height: 100,
+                                            width: 300,
+                                            child: Column(children: [
+                                              Icon(Icons.block_rounded,color: Colors.red,),
+                                              Center(
+                                                child: Text(
+                                                  'You cant receive orders as you are offline ,if you have any pending orders please fulfill them ',style:TextStyle(fontSize: 14,color: Colors.red[800])
+                                                  
+                                                ),
+                                              )
+                                            ]),
+                                          ),
+                                        ),
+
+                                      ),
+                                    );
+                                  }
+                                } else
+                                  return CircularProgressIndicator();
                               },
                             ),
                             Padding(

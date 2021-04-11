@@ -7,7 +7,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'model/orders.dart';
 import 'api/apiService.dart';
 import 'package:http/http.dart' as http;
-
+import 'orderDetails.dart';
 class ActiveOrders extends StatefulWidget {
   @override
   _ActiveOrdersState createState() => _ActiveOrdersState();
@@ -15,8 +15,12 @@ class ActiveOrders extends StatefulWidget {
 
 class _ActiveOrdersState extends State<ActiveOrders> {
   CountDownController _controller = CountDownController();
+
   String url;
   bool _isPause = false;
+
+OrderDetail orders=new OrderDetail();
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<TokenModel, StatusUpdate>(
@@ -44,6 +48,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                   }
 
                   if (item.status == 'Order Preparing') {
+
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Card(
@@ -56,6 +61,31 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
+
+                    return GestureDetector(
+                          onTap: () {
+                            
+                          orders.settingModalBottomSheet(context, item);
+                          
+                          },
+                    child: Card(
+                      color: Colors.blueGrey,
+                      shadowColor: Colors.black,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.status == "Order Placed"
+                                ? 'Ordered'
+                                : 'Order Preparing\n',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Text(
@@ -198,6 +228,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                           ),
                         ),
                       ),
+                    ),
                     );
                   } else {
                     return Container();
