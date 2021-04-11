@@ -27,6 +27,8 @@ class _MenuDashboardState extends State<MenuDashboard>
   bool isDrawerOpen = false;
   double screenwidth, screenheight;
 
+  
+
   final Duration duration = const Duration(milliseconds: 300);
   AnimationController _controller;
   Animation<double> _scaleAnimation;
@@ -214,6 +216,7 @@ class _MenuDashboardState extends State<MenuDashboard>
               : BorderRadius.all(Radius.circular(0.0)),
           elevation: 9,
           child: Container(
+            color: Colors.lime[200],
             padding: const EdgeInsets.only(left: 0, top: 0, bottom: 0),
             child: SingleChildScrollView(
               child: Column(
@@ -370,7 +373,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                                 if(snapshot.hasData){
                                 if (snapshot.data) {
                                   return Padding(
-                                    padding: const EdgeInsets.all(16.0),
+                                    padding: const EdgeInsets.only(left:8, bottom:16, top:8),
                                     child: Column(
                                       children: [
                                         Text(
@@ -379,7 +382,10 @@ class _MenuDashboardState extends State<MenuDashboard>
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        PendingOrders(),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 16, top:8),
+                                          child: PendingOrders(),
+                                        ),
                                       ],
                                     ),
                                   );
@@ -404,17 +410,22 @@ class _MenuDashboardState extends State<MenuDashboard>
                               },
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '\nActive Orders',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  ActiveOrders()
-                                ],
+                              padding: const EdgeInsets.all(0.0),
+                              child: Container(
+                                width: screenwidth,
+                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(30),),
+                                child: Column(
+                                  
+                                  children: [
+                                    Text(
+                                      '\nActive Orders',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    ActiveOrders()
+                                  ],
+                                ),
                               ),
                             ),
                           ],
