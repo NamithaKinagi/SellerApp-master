@@ -16,33 +16,44 @@ import 'package:http/http.dart' as http;
 import 'orderDetails.dart';
 import 'orderDetails.dart';
 
+
 class PendingOrders extends StatefulWidget {
   @override
   _PendingOrdersState createState() => _PendingOrdersState();
 }
 
 class _PendingOrdersState extends State<PendingOrders> {
+  
+ 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    OrderDetail orders=new OrderDetail();
+    OrderDetail orderitems=new OrderDetail();
     String url;
-
+    
     return Consumer2<TokenModel, StatusUpdate>(
         builder: (context, value, child, val) {
+    //       APIService.fetchOrderItems(context,value.token).then((product_names) {
+    //   setState(() {
+    //     productNames=product_names;
+        
+    //   });
+    // });
+         
       return Container(
-        height: 150,
+        height: 160,
         child: FutureBuilder(
           future: APIService.fetchOrders(context, value.token),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   Orders item = snapshot.data[index];
-                  switch (item.source) {
+                  switch (item.businessUnit) {
                     case 'Sodimac':
                       url = 'assets/sodi.png';
                       break;
@@ -55,15 +66,17 @@ class _PendingOrdersState extends State<PendingOrders> {
                   if (item.status == 'Order Placed') {
                     return GestureDetector(
                       onTap: () {
-                        orders.settingModalBottomSheet(context, item);
+                        orderitems.settingModalBottomSheet(context, item);
                       },
                       child: Card(
-                        elevation: 10,
+                        shadowColor:Colors.black,
+                        elevation: 12,
+                        
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                         color: Colors.white,
-                        shadowColor: Colors.black12,
+                        
                         child: Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: Column(
@@ -116,9 +129,9 @@ class _PendingOrdersState extends State<PendingOrders> {
                                               size: 30,
                                             ),
                                             Text(
-                                              item.date.hour.toString() +
+                                              item.orderPlacedDate.hour.toString() +
                                                   ":" +
-                                                  item.date.minute.toString(),
+                                                  item.orderPlacedDate.minute.toString(),
                                               style:
                                                   TextStyle(color: Colors.black),
                                             ),
@@ -132,13 +145,14 @@ class _PendingOrdersState extends State<PendingOrders> {
                               Padding(
                                 padding: const EdgeInsets.only(left:8),
                                 child: Text(
-                                  '#00${item.oid}',
+                                  '#00${item.orderId}',
                                   style: TextStyle(
                                       fontSize: 18.0,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
+                              Text(productName(item.orderItems)),
                               Container(
                                 width: 200,
                                 child: Row(
@@ -153,7 +167,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                                                   listen: false)
                                               .addToken(item.status);
                                           APIService.changeOrderStatus(
-                                              item.oid, value.token);
+                                              item.orderId, value.token);
                                         },
                                         color: Colors.black,
                                         shape: RoundedRectangleBorder(
@@ -201,8 +215,17 @@ class _PendingOrdersState extends State<PendingOrders> {
         ),
       );
     });
+    
   }
-
+ String productName(List<OrderItem> data)
+ {
+   String productNames="";
+    for(int i=0;i<data.length;i++)
+              {
+                productNames+=data[i].productName+", ";
+              }
+              return productNames;
+ }
 
   _showRejectionchoiceDialog(Orders item, token) => showDialog(
       context: context,
@@ -237,7 +260,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                   child: Text('Continue'),
                   onPressed: () {
                     setState(() {});
-                    APIService.orderRejected(item.oid, token);
+                    APIService.orderRejected(item.orderId, token);
                     Navigator.of(context).pop();
                   }),
               FlatButton(

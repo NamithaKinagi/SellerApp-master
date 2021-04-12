@@ -20,11 +20,11 @@ class RejectedOrders extends StatelessWidget {
     return Consumer<TokenModel>(builder: (context, value, child) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.blueGrey,
+          backgroundColor:  Color(0xff393E43),
           title: Text(
             'Rejected Orders',
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           leading: IconButton(
             icon: Icon(
@@ -37,90 +37,89 @@ class RejectedOrders extends StatelessWidget {
               // do something
             },
           )),
+          backgroundColor: Color(0xffCCCCCD),
       body:
-       Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          FutureBuilder(
-            future: APIService.fetchOrders(context,value.token),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: snapshot.data.length,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    Orders item = snapshot.data[index];
-                   
-                    if (item.status == 'Order Rejected') {
-                      return Card(
-                        color: Colors.blueGrey,
-                        shadowColor: Colors.black,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.status == "Order Rejected"
-                                  ? 'Rejected'
-                                  : 'Bad',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange),
-                            ),
-                            Text(
-                              '#00${item.oid}',
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              item.customer,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(item.customer,
-                                  style: TextStyle(
-                                      fontSize: 15, color: Colors.white)),
-                            ),
-                            const Divider(
-                              height: 5,
-                              thickness: 3,
-                              indent: 10,
-                              endIndent: 40,
-                            ),
-                            Container(
-                              width: 400,
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Row(
-                                      children: [],
-                                    ),
-                                  ),
-                                ],
+      
+       SingleChildScrollView(
+                child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            FutureBuilder(
+              future: APIService.fetchOrders(context,value.token),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      Orders item = snapshot.data[index];
+                     
+                      if (item.status == 'Order Rejected') {
+                        return Card(
+                          elevation: 10,
+                          margin: EdgeInsets.symmetric(vertical:10,horizontal:25),
+                          color:Colors.white,
+                          shadowColor: Colors.black,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.status == "Order Rejected"
+                                    ? 'Rejected'
+                                    : 'Bad',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red[400]),
                               ),
-                            )
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
-                );
-              }
-              return Center(child: CircularProgressIndicator());
-            },
-          ),
-        ],
+                              Text(
+                                '#00${item.orderId}',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.black26,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(item.customer.name,
+                                    style: TextStyle(
+                                        fontSize: 15, color: Colors.black)),
+                              ),
+                              
+                              // Container(
+                              //   width: 400,
+                              //   child: Row(
+                              //     children: [
+                              //       Padding(
+                              //         padding: const EdgeInsets.only(left: 5),
+                              //         child: Row(
+                              //           children: [],
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // )
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  );
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+          ],
       ),
+       ),
     );
     });
   }

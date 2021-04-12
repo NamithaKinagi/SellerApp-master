@@ -10,9 +10,10 @@ import 'package:Seller_App/model/seller.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class APIService {
+
   build(BuildContext context) {}
   APIService({context});
-
+  
   static final storage = new FlutterSecureStorage();
   static Future<LoginResponseModel> login(
       LoginRequestModel requestModel) async {
@@ -45,19 +46,21 @@ class APIService {
     }
   }
 
-  static Future<List<Orders>> fetchOrders(BuildContext context, String token) async {
+   static Future<List<Orders>> fetchOrders(BuildContext context, String token) async {
+     
     final response = await http.get(Uri.parse("http://10.0.2.2:8080/orders/seller"),
         headers: {"Authorization": "Bearer " + token});
     
 
     if (response.statusCode == 200) {
      
-
+    
       return ordersFromJson(response.body);
     } else {
       throw Exception();
     }
   }
+  
 
   static Future<http.Response> changeOrderStatus(int oid, String token) async {
     final response = await http.put(

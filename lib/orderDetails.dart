@@ -16,7 +16,7 @@ class OrderDetail {
                         children: [
                           Container(
             height: 440,
-              color: Color(0xFF737373),
+              color: Color(0xff6D6D6D),
               child: Container(
                 child: buildBottomSheet(item),
                 decoration: BoxDecoration(
@@ -78,7 +78,7 @@ class OrderDetail {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item.customer,style: TextStyle(fontSize:22,fontWeight: FontWeight.bold ),),
+                      Text(item.customer.name,style: TextStyle(fontSize:22,fontWeight: FontWeight.bold ),),
                       Text('Customer Name',style: TextStyle(fontSize:18,fontWeight: FontWeight.w200 ),),
                       
                     ],
@@ -95,9 +95,9 @@ class OrderDetail {
               ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: item.orderItem.length,
+                  itemCount: item.orderItems.length,
                   itemBuilder: (context, int index) {
-                    switch (item.orderItem[index].productName) {
+                    switch (item.orderItems[index].productName) {
                       case 'Pizza':
                         url = 'assets/pizza.jpeg';
                         break;
@@ -157,13 +157,13 @@ class OrderDetail {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      item.orderItem[index].productName,
+                                      item.orderItems[index].productName,
                                       style: TextStyle(
                                           fontSize: 18, fontWeight: FontWeight.normal),
                                     ),
-                                    Text('SKU ID:' + item.orderItem[index].skuId,style: TextStyle(fontSize: 10),),
+                                    Text('SKU ID:' + item.orderItems[index].skuId,style: TextStyle(fontSize: 10),),
                                     Text(
-                                      '\$' + item.orderItem[index].price.toString(),
+                                      '\$' + item.orderItems[index].price.toString(),
                                       style: TextStyle(
                                           fontSize: 15, fontWeight: FontWeight.bold,color: Color(0xff0D2F36)),
                                     ),
@@ -178,7 +178,7 @@ class OrderDetail {
                                     decoration: BoxDecoration(
                                         shape: BoxShape.circle, color: Colors.white),
                                     child: Text(
-                                      item.orderItem[index].quantity.toString(),
+                                      item.orderItems[index].quantity.toString(),
                                       style: TextStyle(fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black),
@@ -186,8 +186,8 @@ class OrderDetail {
                                   )),
                               Text(
                                 '\$' +
-                                    (item.orderItem[index].quantity *
-                                            item.orderItem[index].price)
+                                    (item.orderItems[index].quantity *
+                                            item.orderItems[index].price)
                                         .toString(),
                                 style: TextStyle(
                                     fontSize: 16, color: Color(0xff0D2F36),fontWeight: FontWeight.bold),

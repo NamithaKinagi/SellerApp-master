@@ -10,80 +10,148 @@ String ordersToJson(List<Orders> data) => json.encode(List<dynamic>.from(data.ma
 
 class Orders {
     Orders({
-        this.oid,
+        this.orderId,
         this.customer,
-        this.seller,
-        this.date,
+        this.orderPlacedDate,
         this.status,
-        this.source,
+        this.businessUnit,
         this.totalPrice,
-        this.orderItem,
+        this.orderFulfillmentTime,
+        this.orderPreparationTime,
+        this.orderItems,
     });
 
-    int oid;
-    String customer;
-    String seller;
-    DateTime date;
+    int orderId;
+    Customer customer;
+    DateTime orderPlacedDate;
     String status;
-    String source;
+    String businessUnit;
     double totalPrice;
-    List<OrderItem> orderItem;
+    double orderFulfillmentTime;
+    double orderPreparationTime;
+    List<OrderItem> orderItems;
 
     factory Orders.fromJson(Map<String, dynamic> json) => Orders(
-        oid: json["oid"],
-        customer: json["customer"],
-        seller: json["seller"],
-        date: DateTime.parse(json["date"]),
+        orderId: json["orderId"],
+        customer: Customer.fromJson(json["customer"]),
+        orderPlacedDate: DateTime.parse(json["orderPlacedDate"]),
         status: json["status"],
-        source: json["source"],
+        businessUnit: json["businessUnit"],
         totalPrice: json["totalPrice"],
-        orderItem: List<OrderItem>.from(json["orderItem"].map((x) => OrderItem.fromJson(x))),
+        orderFulfillmentTime: json["orderFulfillmentTime"],
+        orderPreparationTime: json["orderPreparationTime"],
+        orderItems: List<OrderItem>.from(json["orderItems"].map((x) => OrderItem.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
-        "oid": oid,
-        "customer": customer,
-        "seller": seller,
-        "date": date.toIso8601String(),
+        "orderId": orderId,
+        "customer": customer.toJson(),
+        "orderPlacedDate": orderPlacedDate.toIso8601String(),
         "status": status,
-        "source": source,
+        "businessUnit": businessUnit,
         "totalPrice": totalPrice,
-        "orderItem": List<dynamic>.from(orderItem.map((x) => x.toJson())),
+        "orderFulfillmentTime": orderFulfillmentTime,
+        "orderPreparationTime": orderPreparationTime,
+        "orderItems": List<dynamic>.from(orderItems.map((x) => x.toJson())),
+    };
+}
+
+class Customer {
+    Customer({
+        this.name,
+        this.email,
+        this.phone,
+        this.address,
+        this.location,
+    });
+
+    String name;
+    String email;
+    int phone;
+    String address;
+    Location location;
+
+    factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+        name: json["name"],
+        email: json["email"],
+        phone: json["phone"],
+        address: json["address"],
+        location: Location.fromJson(json["location"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "address": address,
+        "location": location.toJson(),
+    };
+}
+
+class Location {
+    Location({
+        this.latitude,
+        this.longitude,
+    });
+
+    double latitude;
+    double longitude;
+
+    factory Location.fromJson(Map<String, dynamic> json) => Location(
+        latitude: json["latitude"].toDouble(),
+        longitude: json["longitude"].toDouble(),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "latitude": latitude,
+        "longitude": longitude,
     };
 }
 
 class OrderItem {
     OrderItem({
+        this.upc,
+        this.image,
         this.price,
         this.skuId,
         this.itemId,
         this.quantity,
+        this.basicEtc,
+        this.description,
         this.productName,
-        this.orderCompletionTime,
     });
 
+    String upc;
+    String image;
     double price;
     String skuId;
     int itemId;
     int quantity;
+    int basicEtc;
+    String description;
     String productName;
-    int orderCompletionTime;
 
     factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
+        upc: json["upc"],
+        image: json["image"],
         price: json["price"],
         skuId: json["skuId"],
         itemId: json["itemId"],
         quantity: json["quantity"],
+        basicEtc: json["basic_etc"],
+        description: json["description"],
         productName: json["productName"],
-        orderCompletionTime: json["orderCompletionTime"],
     );
 
     Map<String, dynamic> toJson() => {
+        "upc": upc,
+        "image": image,
         "price": price,
         "skuId": skuId,
         "itemId": itemId,
         "quantity": quantity,
+        "basic_etc": basicEtc,
+        "description": description,
         "productName": productName,
-        "orderCompletionTime": orderCompletionTime,
     };
 }

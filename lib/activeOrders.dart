@@ -37,7 +37,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                 shrinkWrap: true,
                 itemBuilder: (BuildContext context, int index) {
                   Orders item = snapshot.data[index];
-                  switch (item.source) {
+                  switch (item.businessUnit) {
                     case 'Sodimac':
                       url = 'assets/sodi.png';
                       break;
@@ -78,36 +78,34 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                               //       color: Colors.orange),
                               // ),
 
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                        height: 75,
-                                        width: 180,
-                                        decoration: new BoxDecoration(
-                                            borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0)),
-                                            image: new DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: AssetImage(url))),
-                                      ),
-                                    CircularCountDownTimer(
-                                      width: 60.0,
-                                      height: 60.0,
-                                      duration: 20,
-                                      fillColor: Colors.amber,
-                                      ringColor: Colors.white,
-                                      controller: _controller,
-                                      backgroundColor: Colors.white54,
-                                      strokeWidth: 5.0,
-                                      strokeCap: StrokeCap.round,
-                                      isTimerTextShown: true,
-                                      isReverse: true,
-                                      onComplete: () {
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Container(
+                                      height: 75,
+                                      width: 180,
+                                      decoration: new BoxDecoration(
+                                          borderRadius:
+                                BorderRadius.all(Radius.circular(20.0)),
+                                          image: new DecorationImage(
+                                fit: BoxFit.fill,
+                                image: AssetImage(url))),
+                                    ),
+                                  CircularCountDownTimer(
+                                    width: 60.0,
+                                    height: 60.0,
+                                    duration: 20,
+                                    fillColor: Colors.amber,
+                                    ringColor: Colors.white,
+                                    controller: _controller,
+                                    backgroundColor: Colors.white54,
+                                    strokeWidth: 5.0,
+                                    strokeCap: StrokeCap.round,
+                                    isTimerTextShown: true,
+                                    isReverse: true,
+                                    onComplete: () {
 // Alert(
 
 // context: context,
@@ -133,16 +131,15 @@ class _ActiveOrdersState extends State<ActiveOrders> {
 // type: AlertType.success)
 
 // .show();
-                                      },
-                                      textStyle: TextStyle(
-                                          fontSize: 15.0, color: Colors.black),
-                                    ),
-                                  ],
-                                ),
+                                    },
+                                    textStyle: TextStyle(
+                                        fontSize: 15.0, color: Colors.black),
+                                  ),
+                                ],
                               ),
 
                               Text(
-                                '#00${item.oid}',
+                                '#00${item.orderId}',
                                 style: TextStyle(
                                     fontSize: 20.0,
                                     color: Colors.black,
@@ -152,7 +149,7 @@ class _ActiveOrdersState extends State<ActiveOrders> {
                                 height: 5,
                               ),
                               Text(
-                                item.customer,
+                                item.customer.name,
                                 style: TextStyle(color: Colors.black),
                               ),
                               const Divider(
