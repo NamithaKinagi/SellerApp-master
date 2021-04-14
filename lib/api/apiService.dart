@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../model/loginModel.dart';
 import '../model/orders.dart';
-import 'package:Seller_App/model/seller.dart';
+import 'package:Seller_App/model/Seller.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class APIService {
@@ -106,7 +106,7 @@ class APIService {
         headers: {"Authorization": "Bearer " + token});
 
     if (response.statusCode == 200) {
-      return sellerFromJson(response.body).name;
+      return SellerFromJson(response.body).name;
     } else {
       throw Exception();
     }
@@ -138,7 +138,7 @@ class APIService {
         headers: {"Authorization": "Bearer " + token});
 
     if (response.statusCode == 200) {
-      return sellerFromJson(response.body).available;
+      return SellerFromJson(response.body).available;
     } else {
       
 

@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:Seller_App/model/rejectionReasonsJson.dart';
 import 'package:Seller_App/providers/rejectionReason.dart';
-import 'package:Seller_App/rejectedOrders.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Seller_App/providers/tokenModel.dart';
@@ -11,20 +8,42 @@ import 'package:provider/provider.dart';
 import 'model/orders.dart';
 import 'api/apiService.dart';
 import 'orderDetails.dart';
-import 'package:http/http.dart' as http;
-
-import 'orderDetails.dart';
-import 'orderDetails.dart';
-
 
 class PendingOrders extends StatefulWidget {
   @override
   _PendingOrdersState createState() => _PendingOrdersState();
 }
 
-class _PendingOrdersState extends State<PendingOrders> {
+class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderStateMixin {
   
- 
+ AnimationController controllerOne;
+  Animation<Color> animationOne;
+  Animation<Color> animationTwo;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controllerOne = AnimationController(
+        duration: Duration(milliseconds: 2000),
+        vsync: this);
+    animationOne = ColorTween(begin: Colors.black38,end: Colors.white24).animate(controllerOne);
+    animationTwo = ColorTween(begin: Colors.white24,end: Colors.black38).animate(controllerOne);
+    controllerOne.forward();
+    controllerOne.addListener((){
+      if(controllerOne.status == AnimationStatus.completed){
+        controllerOne.reverse();
+      } else if(controllerOne.status == AnimationStatus.dismissed){
+        controllerOne.forward();
+      }
+      this.setState((){});
+    });
+  }
+  @override
+  void dispose() {
+    super.dispose();
+   
+    controllerOne.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -111,6 +130,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                                         child: FittedBox(
                                           child: Image(
                                             image: new AssetImage(url),
+                                            
                                           ),
                                           fit: BoxFit.fill,
                                         ),
@@ -125,13 +145,13 @@ class _PendingOrdersState extends State<PendingOrders> {
                                           //     MainAxisAlignment.start,
                                           children: [
                                             Icon(
-                                              Icons.timer_outlined,
-                                              size: 30,
+                                              Icons.schedule,
+                                              size: 26,
                                             ),
                                             Text(
                                               item.orderPlacedDate.hour.toString() +
                                                   ":" +
-                                                  item.orderPlacedDate.minute.toString(),
+                                                  item.orderPlacedDate.minute.toString()+((item.orderPlacedDate.hour)<12?' am':' pm'),
                                               style:
                                                   TextStyle(color: Colors.black),
                                             ),
@@ -160,6 +180,7 @@ class _PendingOrdersState extends State<PendingOrders> {
                                     Padding(
                                       padding: const EdgeInsets.only(left: 5),
                                       child: RaisedButton(
+                                    
                                         hoverColor: Colors.blueGrey,
                                         onPressed: () {
                                           setState(() {});
@@ -210,7 +231,16 @@ class _PendingOrdersState extends State<PendingOrders> {
                 },
               );
             }
-            return Center(child: CircularProgressIndicator());
+            return ShaderMask(
+                shaderCallback: (rect){
+                  return LinearGradient(
+                      tileMode: TileMode.mirror,
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                },
+                child: Container(color: Colors.white,
+                  height:156,width:MediaQuery.of(context).size.width,));
           },
         ),
       );

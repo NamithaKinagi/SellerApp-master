@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Seller_App/dashboardMenu.dart';
 import 'providers/tokenModel.dart';
-
 import 'package:provider/provider.dart';
 import 'package:Seller_App/Screens/introductionScreen.dart';
 import 'dashboardMenu.dart';
@@ -52,25 +51,46 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   String _token = "";
   _RootPageState() {
+    readStorage();
+    
     readStorage().then((val) => Provider.of<TokenModel>(context, listen: false).addToken(val));
   }
 
   Future<String> readStorage() async {
-    final storage = new FlutterSecureStorage();
-    String value = await storage.read(key: "token");
-
+  
+    final  storage = new FlutterSecureStorage();
+    
+    String value = await storage.read(key: "token")??"";
+  
     return value;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       child: Consumer<TokenModel>(builder: (context, tokenModel, child) {
+       return FutureBuilder(
+      future: readStorage(),
+      builder: (ctx, snapshot) {
+        if(snapshot.hasData)
+        {
         
         if (tokenModel.token == "")
+        {
+          
           return LoginPage();
+        }
         else
           return MenuDashboard();
+      }
+      else
+      {
+        return Center(child: CircularProgressIndicator(backgroundColor: Colors.black,valueColor: AlwaysStoppedAnimation(Colors.green),
+        strokeWidth: 10,));
+      }
+      }
+       );
       }),
     );
   }

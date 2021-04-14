@@ -1,11 +1,13 @@
 name: Seller_App
-description: A Mobile application for seller
+description: A Mobile application for Seller
 publish_to: 'none' 
 version: 1.0.0+1
 environment:
   sdk: ">=2.7.0 <3.0.0"
 dependencies:
   flutter_switch: ^0.3.0
+  intl: ^0.17.0
+  cached_network_image: ^3.0.0
   flutter_secure_storage:
   http: ^0.13.1
   
@@ -31,7 +33,7 @@ flutter:
     - assets/pizza.jpeg
     - assets/burger.jpeg
     - assets/Screen2.jpeg
-    - assets/sellerLogo.jpeg
+    - assets/SellerLogo.jpeg
     - assets/chef.jpeg
     - assets/tottus.png
     - assets/Sodimac.png

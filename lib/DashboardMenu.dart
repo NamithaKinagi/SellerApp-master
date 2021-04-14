@@ -1,18 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:Seller_App/rejectedOrders.dart';
+import 'RejectedOrders.dart';
 import 'providers/tokenModel.dart';
 import 'package:provider/provider.dart';
 import 'pendingOrders.dart';
 import 'activeOrders.dart';
-import 'activeOrders.dart';
 import 'api/apiService.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import 'package:http/http.dart' as http;
 
 class MenuDashboard extends StatefulWidget {
   @override
@@ -20,7 +15,7 @@ class MenuDashboard extends StatefulWidget {
 }
 
 class _MenuDashboardState extends State<MenuDashboard>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final storage = new FlutterSecureStorage();
   bool isSwitched = false;
 
@@ -32,23 +27,43 @@ class _MenuDashboardState extends State<MenuDashboard>
   Animation<double> _scaleAnimation;
   Animation<double> _menuScaleAnimation;
   Animation<Offset> _slideAnimation;
-
+   AnimationController controllerOne;
+  Animation<Color> animationOne;
+  Animation<Color> animationTwo;
   @override
   void initState() {
-    // TODO: implement initState
+   
     super.initState();
+     
     _controller = AnimationController(vsync: this, duration: duration);
     _scaleAnimation = Tween<double>(begin: 1, end: 0.8).animate(_controller);
     _slideAnimation = Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0))
         .animate(_controller);
     _menuScaleAnimation =
         Tween<double>(begin: 0.5, end: 1).animate(_controller);
+        controllerOne = AnimationController(
+        duration: Duration(milliseconds: 2000),
+        vsync: this);
+    animationOne = ColorTween(begin: Colors.black38,end: Colors.white24).animate(controllerOne);
+    animationTwo = ColorTween(begin: Colors.white24,end: Colors.black38).animate(controllerOne);
+    controllerOne.forward();
+    controllerOne.addListener((){
+      if(controllerOne.status == AnimationStatus.completed){
+        controllerOne.reverse();
+      } else if(controllerOne.status == AnimationStatus.dismissed){
+        controllerOne.forward();
+      }
+      //this.setState((){});
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
+    _controller.dispose();
+    controllerOne.dispose();
+    
+    
   }
 
   @override
@@ -102,7 +117,15 @@ class _MenuDashboardState extends State<MenuDashboard>
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold));
                               } else {
-                                return CircularProgressIndicator();
+                                return   ShaderMask(
+                shaderCallback: (rect){
+                  return LinearGradient(
+                      tileMode: TileMode.mirror,
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                },
+                child:Text(''));
                               }
                             }),
                       ])
@@ -210,20 +233,13 @@ class _MenuDashboardState extends State<MenuDashboard>
       right: isDrawerOpen ? -0.2 * screenwidth : 0,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: Container(
-          height: MediaQuery.of(context).size.height/2,
-          decoration: BoxDecoration(
-            borderRadius: isDrawerOpen
-                ? BorderRadius.circular(40)
-                : BorderRadius.circular(0),
-                color: Color(0xffE5E5E5),
-          ),
-          
-          padding: const EdgeInsets.only(left: 0, top: 0, bottom: 0),
-          child: SingleChildScrollView(
+        child: Material(
+          borderRadius: isDrawerOpen?BorderRadius.circular(40):BorderRadius.circular(0),
+                  child: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
+                  color: Color(0xffE5E5E5),
                   height: MediaQuery.of(context).size.height,
                   child: ListView(scrollDirection: Axis.vertical, children: [
                     Column(
@@ -257,7 +273,16 @@ class _MenuDashboardState extends State<MenuDashboard>
                                     if (snapshot.hasData) {
                                       return Text(snapshot.data);
                                     } else {
-                                      return CircularProgressIndicator();
+                                      return ShaderMask(
+                shaderCallback: (rect){
+                  return LinearGradient(
+                      tileMode: TileMode.mirror,
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                },
+                child:Container(color: Colors.white,
+                  height:20,width:80));
                                     }
                                   }),
                               FutureBuilder(
@@ -338,7 +363,15 @@ class _MenuDashboardState extends State<MenuDashboard>
                                             });
                                           });
                                     } else {
-                                      return CircularProgressIndicator();
+                                      return ShaderMask(
+                shaderCallback: (rect){
+                  return LinearGradient(
+                      tileMode: TileMode.mirror,
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                },
+                child:Container(color: Colors.white,width: 40,height: 10,));
                                     }
                                   })
                             ]),
@@ -347,17 +380,9 @@ class _MenuDashboardState extends State<MenuDashboard>
                                 onPressed: null)
                           ],
                         ),
-                        FutureBuilder(
-                          future: APIService.fetchAvail(context, token),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 8, bottom: 16, top: 8),
-                                  child: Column(
-                                    children: [
-                                      Center(
+                        Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
                                         child: Text(
                                           'Pending Orders',
                                           style: TextStyle(
@@ -365,9 +390,17 @@ class _MenuDashboardState extends State<MenuDashboard>
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      PendingOrders(),
-                                    ],
-                                  ),
+                                    ),
+                        FutureBuilder(
+                          future: APIService.fetchAvail(context, token),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              if (snapshot.data) {
+                                return Column(
+                                  children: [
+                                    
+                                    PendingOrders(),
+                                  ],
                                 );
                               } else {
                                 return Center(
@@ -404,8 +437,20 @@ class _MenuDashboardState extends State<MenuDashboard>
                                 );
                               }
                             } else
-                              return CircularProgressIndicator();
+                              return ShaderMask(
+                shaderCallback: (rect){
+                  return LinearGradient(
+                      tileMode: TileMode.mirror,
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                },
+                child: Container(color: Colors.white,
+                  height:156,width:MediaQuery.of(context).size.width,));
                           },
+                        ),
+                        SizedBox(
+                          height:20,
                         ),
                         ConstrainedBox(
                           constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height*0.8),
@@ -413,7 +458,7 @@ class _MenuDashboardState extends State<MenuDashboard>
                             width: screenwidth,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.only( topLeft:Radius.circular(30),topRight: Radius.circular(30)),
                             ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,

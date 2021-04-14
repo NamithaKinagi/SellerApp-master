@@ -1,10 +1,6 @@
-import 'package:Seller_App/Screens/introductionScreen.dart';
 import 'package:Seller_App/providers/rejectionReason.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/dashboardMenu.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 import 'providers/tokenModel.dart';
-import 'package:Seller_App/Screens/loginScreen.dart';
 import 'package:Seller_App/rootPage.dart';
 import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
