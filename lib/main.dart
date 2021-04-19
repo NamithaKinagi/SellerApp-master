@@ -1,24 +1,20 @@
 import 'package:Seller_App/providers/rejectionReason.dart';
 import 'package:flutter/material.dart';
-import 'providers/tokenModel.dart';
 import 'package:Seller_App/rootPage.dart';
 import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
-
+import 'session.dart';
 import 'rootPage.dart';
 
-//import 'pages/login_page.dart';
-
-void main() {
-  runApp( MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => TokenModel()),
-      ChangeNotifierProvider(create: (_)=>StatusUpdate()),
-      ChangeNotifierProvider<RejectionReasons>(
-        create: (_) => RejectionReasons(),
-      ),
-    ],
-    child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Session.init();
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => StatusUpdate()),
+    ChangeNotifierProvider<RejectionReasons>(
+      create: (_) => RejectionReasons(),
+    ),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +24,6 @@ class MyApp extends StatelessWidget {
       title: 'Image Loader',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        
         fontFamily: 'Poppins',
         primaryColor: Colors.white,
         floatingActionButtonTheme: FloatingActionButtonThemeData(

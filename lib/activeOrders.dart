@@ -1,6 +1,6 @@
+import 'package:Seller_App/session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/providers/tokenModel.dart';
 import 'orderDetails.dart';
 import 'providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
@@ -13,45 +13,52 @@ class ActiveOrders extends StatefulWidget {
   _ActiveOrdersState createState() => _ActiveOrdersState();
 }
 
-class _ActiveOrdersState extends State<ActiveOrders>with SingleTickerProviderStateMixin {
+class _ActiveOrdersState extends State<ActiveOrders>
+    with SingleTickerProviderStateMixin {
   CountDownController _controller = CountDownController();
   String url;
   OrderDetail orders = new OrderDetail();
-   AnimationController controllerOne;
+  AnimationController controllerOne;
   Animation<Color> animationOne;
   Animation<Color> animationTwo;
+  Future<List<dynamic>> _orders;
   @override
   void initState() {
     // TODO: implement initState
+    //
     super.initState();
-    controllerOne = AnimationController(
-        duration: Duration(milliseconds: 500),
-        vsync: this);
-    animationOne = ColorTween(begin: Colors.black38,end: Colors.white24).animate(controllerOne);
-    animationTwo = ColorTween(begin: Colors.white24,end: Colors.black38).animate(controllerOne);
+    _orders = APIService.fetchOrders();
+
+    controllerOne =
+        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+    animationOne = ColorTween(begin: Colors.black38, end: Colors.white24)
+        .animate(controllerOne);
+    animationTwo = ColorTween(begin: Colors.white24, end: Colors.black38)
+        .animate(controllerOne);
     controllerOne.forward();
-    controllerOne.addListener((){
-      if(controllerOne.status == AnimationStatus.completed){
+    controllerOne.addListener(() {
+      if (controllerOne.status == AnimationStatus.completed) {
         controllerOne.reverse();
-      } else if(controllerOne.status == AnimationStatus.dismissed){
+      } else if (controllerOne.status == AnimationStatus.dismissed) {
         controllerOne.forward();
       }
-      this.setState((){});
+      this.setState(() {});
     });
   }
+
   @override
   void dispose() {
     super.dispose();
-   
+
     controllerOne.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer2<TokenModel, StatusUpdate>(
-        builder: (context, value, child, val) {
+    return Consumer<StatusUpdate>(builder: (context, value, child) {
       return Container(
         child: FutureBuilder(
-          future: APIService.fetchOrders(context, value.token),
+          future: _orders,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
@@ -203,30 +210,35 @@ class _ActiveOrdersState extends State<ActiveOrders>with SingleTickerProviderSta
               );
             }
             return ShaderMask(
-                shaderCallback: (rect){
+                shaderCallback: (rect) {
                   return LinearGradient(
-                      tileMode: TileMode.mirror,
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                          tileMode: TileMode.mirror,
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [animationOne.value, animationTwo.value])
+                      .createShader(rect, textDirection: TextDirection.ltr);
                 },
                 child: Container(
                   child: Center(
                     child: Column(
-                        children: [
-                          Container(
-                            height:200,width:MediaQuery.of(context).size.width*0.9,
-                            decoration: (BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(20))
-                            ),
-                          ),
-                            SizedBox(height:20),
-                            Container(
-                            height:200,width:MediaQuery.of(context).size.width*0.9,
-                            decoration: (BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(20))
-                            ),
-                            ),
-                        ],
-                      ),
+                      children: [
+                        Container(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          decoration: (BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20))),
+                        ),
+                        SizedBox(height: 20),
+                        Container(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          decoration: (BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20))),
+                        ),
+                      ],
+                    ),
                   ),
                 ));
           },

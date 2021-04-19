@@ -1,8 +1,8 @@
 import 'package:Seller_App/model/rejectionReasonsJson.dart';
 import 'package:Seller_App/providers/rejectionReason.dart';
+import 'package:Seller_App/session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/providers/tokenModel.dart';
 import 'package:Seller_App/providers/statusUpdate.dart';
 import 'package:provider/provider.dart';
 import 'model/orders.dart';
@@ -14,58 +14,62 @@ class PendingOrders extends StatefulWidget {
   _PendingOrdersState createState() => _PendingOrdersState();
 }
 
-class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderStateMixin {
-  
- AnimationController controllerOne;
+class _PendingOrdersState extends State<PendingOrders>
+    with SingleTickerProviderStateMixin {
+  AnimationController controllerOne;
   Animation<Color> animationOne;
   Animation<Color> animationTwo;
+  Future<List<dynamic>> _orders;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _orders=APIService.fetchOrders();
     controllerOne = AnimationController(
-        duration: Duration(milliseconds: 2000),
-        vsync: this);
-    animationOne = ColorTween(begin: Colors.black38,end: Colors.white24).animate(controllerOne);
-    animationTwo = ColorTween(begin: Colors.white24,end: Colors.black38).animate(controllerOne);
+        duration: Duration(milliseconds: 2000), vsync: this);
+    animationOne = ColorTween(begin: Colors.black38, end: Colors.white24)
+        .animate(controllerOne);
+    animationTwo = ColorTween(begin: Colors.white24, end: Colors.black38)
+        .animate(controllerOne);
     controllerOne.forward();
-    controllerOne.addListener((){
-      if(controllerOne.status == AnimationStatus.completed){
+    controllerOne.addListener(() {
+      if (controllerOne.status == AnimationStatus.completed) {
         controllerOne.reverse();
-      } else if(controllerOne.status == AnimationStatus.dismissed){
+      } else if (controllerOne.status == AnimationStatus.dismissed) {
         controllerOne.forward();
       }
-      this.setState((){});
+      this.setState(() {});
     });
   }
+
   @override
   void dispose() {
     super.dispose();
-   
+
     controllerOne.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    OrderDetail orderitems=new OrderDetail();
+    OrderDetail orderitems = new OrderDetail();
     String url;
-    
-    return Consumer2<TokenModel, StatusUpdate>(
-        builder: (context, value, child, val) {
-    //       APIService.fetchOrderItems(context,value.token).then((product_names) {
-    //   setState(() {
-    //     productNames=product_names;
-        
-    //   });
-    // });
-         
+
+    return Consumer<StatusUpdate>(
+        builder: (context, value, child) {
+      //       APIService.fetchOrderItems(context,value.token).then((product_names) {
+      //   setState(() {
+      //     productNames=product_names;
+
+      //   });
+      // });
+
       return Container(
         height: 160,
         child: FutureBuilder(
-          future: APIService.fetchOrders(context, value.token),
+          future: _orders,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data.length,
@@ -88,14 +92,12 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                         orderitems.settingModalBottomSheet(context, item);
                       },
                       child: Card(
-                        shadowColor:Colors.black,
+                        shadowColor: Colors.black,
                         elevation: 12,
-                        
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
                         color: Colors.white,
-                        
                         child: Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: Column(
@@ -120,7 +122,7 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
@@ -130,14 +132,14 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                         child: FittedBox(
                                           child: Image(
                                             image: new AssetImage(url),
-                                            
                                           ),
                                           fit: BoxFit.fill,
                                         ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(8, 5, 8, 0),
                                       child: Container(
                                         //height: 40,
                                         child: Column(
@@ -149,11 +151,17 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                               size: 26,
                                             ),
                                             Text(
-                                              item.orderPlacedDate.hour.toString() +
+                                              item.orderPlacedDate.hour
+                                                      .toString() +
                                                   ":" +
-                                                  item.orderPlacedDate.minute.toString()+((item.orderPlacedDate.hour)<12?' am':' pm'),
-                                              style:
-                                                  TextStyle(color: Colors.black),
+                                                  item.orderPlacedDate.minute
+                                                      .toString() +
+                                                  ((item.orderPlacedDate.hour) <
+                                                          12
+                                                      ? ' am'
+                                                      : ' pm'),
+                                              style: TextStyle(
+                                                  color: Colors.black),
                                             ),
                                           ],
                                         ),
@@ -163,7 +171,7 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left:8),
+                                padding: const EdgeInsets.only(left: 8),
                                 child: Text(
                                   '#00${item.orderId}',
                                   style: TextStyle(
@@ -172,7 +180,18 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Text(productName(item.orderItems)),
+                              Padding(
+                                padding: const EdgeInsets.only(left:8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(productName(item.orderItems)),
+                                    Text('Rs ${item.totalPrice.toString()}'),
+                                  ],
+                                ),
+                              ),
                               Container(
                                 width: 200,
                                 child: Row(
@@ -180,7 +199,6 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                     Padding(
                                       padding: const EdgeInsets.only(left: 5),
                                       child: RaisedButton(
-                                    
                                         hoverColor: Colors.blueGrey,
                                         onPressed: () {
                                           setState(() {});
@@ -188,7 +206,7 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                                   listen: false)
                                               .addToken(item.status);
                                           APIService.changeOrderStatus(
-                                              item.orderId, value.token);
+                                              item.orderId);
                                         },
                                         color: Colors.black,
                                         shape: RoundedRectangleBorder(
@@ -205,7 +223,7 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                                       hoverColor: Colors.blueGrey,
                                       onPressed: () {
                                         _showRejectionchoiceDialog(
-                                            item, value.token);
+                                            item, Session.token);
                                         //setState(() {});
                                       },
                                       color: Colors.black,
@@ -232,30 +250,39 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
               );
             }
             return ShaderMask(
-                shaderCallback: (rect){
+                shaderCallback: (rect) {
                   return LinearGradient(
-                      tileMode: TileMode.mirror,
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [animationOne.value,animationTwo.value]).createShader(rect,textDirection: TextDirection.ltr);
+                          tileMode: TileMode.mirror,
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [animationOne.value, animationTwo.value])
+                      .createShader(rect, textDirection: TextDirection.ltr);
                 },
-                child: Container(color: Colors.white,
-                  height:156,width:MediaQuery.of(context).size.width,));
+                child: Container(
+                  color: Colors.white,
+                  height: 156,
+                  width: MediaQuery.of(context).size.width,
+                ));
           },
         ),
       );
     });
-    
   }
- String productName(List<OrderItem> data)
- {
-   String productNames="";
-    for(int i=0;i<data.length;i++)
-              {
-                productNames+=data[i].productName+", ";
-              }
-              return productNames;
- }
+
+  String productName(List<OrderItem> data) {
+    String productNames = "";
+    String firstHalf="";
+    for (int i = 0; i < data.length; i++) {
+      productNames += data[i].productName + ", ";
+    }
+    if (productNames.length > 5) {
+      for (int i = 0; i < 5; i++) {
+        firstHalf += productNames[i];
+      }
+      productNames = firstHalf + "...";
+    }
+    return productNames;
+  }
 
   _showRejectionchoiceDialog(Orders item, token) => showDialog(
       context: context,
@@ -278,7 +305,7 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                             selected: _rejectioneNotifier.currentReason == e,
                             onChanged: (value) {
                               _rejectioneNotifier.updateCountry(value);
-                              Navigator.of(context).pop();
+                              //Navigator.of(context).pop();
                             },
                           ))
                       .toList(),
@@ -290,7 +317,7 @@ class _PendingOrdersState extends State<PendingOrders>with SingleTickerProviderS
                   child: Text('Continue'),
                   onPressed: () {
                     setState(() {});
-                    APIService.orderRejected(item.orderId, token);
+                    APIService.orderRejected(item.orderId);
                     Navigator.of(context).pop();
                   }),
               FlatButton(

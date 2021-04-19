@@ -1,11 +1,11 @@
+import 'package:Seller_App/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/providers/tokenModel.dart';
 import 'package:Seller_App/api/apiService.dart';
 import 'package:Seller_App/model/loginModel.dart';
 import 'package:provider/provider.dart';
-
 import '../progressHUD.dart';
+import 'package:Seller_App/session.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -141,7 +141,6 @@ class _LoginPageState extends State<LoginPage> {
                                 isApiCallProcess = true;
                               });
 
-                            
                               APIService.login(loginRequestModel).then((value) {
                                 if (value != null) {
                                   setState(() {
@@ -153,15 +152,12 @@ class _LoginPageState extends State<LoginPage> {
                                         content: Text("Login Successful"));
                                     scaffoldKey.currentState
                                         .showSnackBar(snackBar);
-                                    Provider.of<TokenModel>(context,
-                                            listen: false)
-                                        .addToken(value.token);
-                                    // Navigator.pushAndRemoveUntil(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //       builder: (context) => MenuDashboard(),
-                                    //     ),
-                                    //     (route) => false);
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Home(),
+                                        ),
+                                        (route) => false);
                                   } else {
                                     final snackBar =
                                         SnackBar(content: Text(value.error));

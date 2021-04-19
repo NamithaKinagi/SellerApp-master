@@ -1,12 +1,12 @@
+import 'package:Seller_App/home.dart';
+import 'package:Seller_App/session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Seller_App/model/orders.dart';
-import 'dashboardMenu.dart';
-import 'main.dart';
+import 'home.dart';
 import 'model/orders.dart';
 import 'package:Seller_App/api/apiService.dart';
 import 'package:provider/provider.dart';
-import 'package:Seller_App/providers/tokenModel.dart';
 import 'package:http/http.dart' as http;
 
 class RejectedOrders extends StatelessWidget {
@@ -16,8 +16,12 @@ class RejectedOrders extends StatelessWidget {
   Widget build(BuildContext context) {
     final double categoryHeight =
         MediaQuery.of(context).size.height * 0.30 - 50;
+    Future<List<dynamic>> _orders;
 
-    return Consumer<TokenModel>(builder: (context, value, child) {
+    void initstate(){
+      _orders=APIService.fetchOrders();
+    }
+
     return Scaffold(
       appBar: AppBar(
           backgroundColor:  Color(0xff393E43),
@@ -33,7 +37,7 @@ class RejectedOrders extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MenuDashboard()));
+                  MaterialPageRoute(builder: (context) => Home()));
               // do something
             },
           )),
@@ -45,7 +49,7 @@ class RejectedOrders extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             FutureBuilder(
-              future: APIService.fetchOrders(context,value.token),
+              future: _orders,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -121,6 +125,5 @@ class RejectedOrders extends StatelessWidget {
       ),
        ),
     );
-    });
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/providers/tokenModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -8,12 +7,14 @@ import '../model/loginModel.dart';
 import '../model/orders.dart';
 import 'package:Seller_App/model/Seller.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:Seller_App/model/products.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Seller_App/session.dart';
 
 class APIService {
-
   build(BuildContext context) {}
   APIService({context});
-  
+
   static final storage = new FlutterSecureStorage();
   static Future<LoginResponseModel> login(
       LoginRequestModel requestModel) async {
@@ -33,8 +34,9 @@ class APIService {
 
     print(response.statusCode);
     if (response.statusCode == 200) {
-      await storage.write(
-          key: "token", value: json.decode(response.body)['token']);
+      Session.token = json.decode(response.body)['token'];
+      // await storage.write(
+      //     key: "token", value: json.decode(response.body)['token']);
 
       return LoginResponseModel.fromJson(
         json.decode(response.body),
@@ -46,28 +48,24 @@ class APIService {
     }
   }
 
-   static Future<List<Orders>> fetchOrders(BuildContext context, String token) async {
-     
-    final response = await http.get(Uri.parse("http://10.0.2.2:8080/orders/seller"),
-        headers: {"Authorization": "Bearer " + token});
-    
+  static Future<List<Orders>> fetchOrders() async {
+    final response = await http.get(
+        Uri.parse("http://10.0.2.2:8080/orders/seller"),
+        headers: {"Authorization": "Bearer " + Session.token});
 
     if (response.statusCode == 200) {
-     
-    
       return ordersFromJson(response.body);
     } else {
       throw Exception();
     }
   }
-  
 
-  static Future<http.Response> changeOrderStatus(int oid, String token) async {
+  static Future<http.Response> changeOrderStatus(int oid) async {
     final response = await http.put(
       Uri.parse("http://10.0.2.2:8080/orders/" + oid.toString()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + Session.token
       },
       body: jsonEncode(<String, String>{
         "status": "Order Preparing",
@@ -81,12 +79,12 @@ class APIService {
     return response;
   }
 
-  static Future<http.Response> orderRejected(int oid, String token) async {
+  static Future<http.Response> orderRejected(int oid) async {
     final response = await http.put(
       Uri.parse("http://10.0.2.2:8080/orders/" + oid.toString()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + Session.token
       },
       body: jsonEncode(<String, String>{
         "status": "Order Rejected",
@@ -100,10 +98,10 @@ class APIService {
     return response;
   }
 
-  static Future<String> fetchName(BuildContext context, String token) async {
+  static Future<String> fetchName() async {
     final response = await http.get(
         Uri.parse("http://10.0.2.2:8080/details/seller"),
-        headers: {"Authorization": "Bearer " + token});
+        headers: {"Authorization": "Bearer " + Session.token});
 
     if (response.statusCode == 200) {
       return SellerFromJson(response.body).name;
@@ -112,12 +110,12 @@ class APIService {
     }
   }
 
-  static Future<http.Response> updateAvailable(bool value, String token) async {
+  static Future<http.Response> updateAvailable(bool value) async {
     final response = await http.put(
       Uri.parse("http://10.0.2.2:8080/update/seller"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Bearer " + token
+        "Authorization": "Bearer " + Session.token
       },
       body: jsonEncode(<String, bool>{
         'available': value,
@@ -132,16 +130,46 @@ class APIService {
     return response;
   }
 
-  static Future<bool> fetchAvail(BuildContext context, String token) async {
+  static Future<bool> fetchAvail() async {
     final response = await http.get(
         Uri.parse("http://10.0.2.2:8080/details/seller"),
-        headers: {"Authorization": "Bearer " + token});
+        headers: {"Authorization": "Bearer " + Session.token});
 
     if (response.statusCode == 200) {
       return SellerFromJson(response.body).available;
-    } else {
-      
+    } else {}
+  }
 
+  static Future<List<Products>> fetchProducts() async {
+    final response = await http.get(
+        Uri.parse("http://10.0.2.2:8080/product/seller"),
+        headers: {"Authorization": "Bearer " + Session.token});
+
+    if (response.statusCode == 200) {
+      return productsFromJson(response.body);
+    } else {
+      throw Exception();
     }
+  }
+
+  static Future<http.Response> updateProdAvailable(bool value, int pid) async {
+    final response = await http.put(
+      Uri.parse("http://10.0.2.2:8080/product"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": "Bearer " + Session.token
+      },
+      body: jsonEncode(<String, dynamic>{
+        'available': value,
+        'pid': pid,
+      }),
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print("Product availability changed!");
+    } else {
+      print("Product Availability update failed!");
+    }
+    return response;
   }
 }
