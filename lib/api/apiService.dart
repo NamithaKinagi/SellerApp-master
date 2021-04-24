@@ -1,23 +1,21 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../model/loginModel.dart';
 import '../model/orders.dart';
 import 'package:Seller_App/model/Seller.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:Seller_App/model/products.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Seller_App/session.dart';
+import 'package:Seller_App/model/error.dart';
 
 class APIService {
   build(BuildContext context) {}
   APIService({context});
 
   static final storage = new FlutterSecureStorage();
-  static Future<LoginResponseModel> login(
-      LoginRequestModel requestModel) async {
+  static Future<dynamic> login(LoginRequestModel requestModel) async {
     Uri url = Uri.parse("http://10.0.2.2:8080/login/seller");
     Map<String, String> headers = {
       "Accept": "application/json",
@@ -35,28 +33,26 @@ class APIService {
     print(response.statusCode);
     if (response.statusCode == 200) {
       Session.token = json.decode(response.body)['token'];
-      // await storage.write(
-      //     key: "token", value: json.decode(response.body)['token']);
 
       return LoginResponseModel.fromJson(
         json.decode(response.body),
       );
-    } else {
-      return LoginResponseModel.fromJson(
-        json.decode(response.body),
-      );
+    } else if (response.statusCode == 401) {
+      return Error.fromJson(json.decode(response.body));
     }
   }
 
   static Future<List<Orders>> fetchOrders() async {
-    final response = await http.get(
-        Uri.parse("http://10.0.2.2:8080/orders/seller"),
-        headers: {"Authorization": "Bearer " + Session.token});
+    try {
+      final response = await http.get(
+          Uri.parse("http://10.0.2.2:8080/orders/seller"),
+          headers: {"Authorization": "Bearer " + Session.token});
 
-    if (response.statusCode == 200) {
-      return ordersFromJson(response.body);
-    } else {
-      throw Exception();
+      if (response.statusCode == 200) {
+        return ordersFromJson(response.body);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -69,6 +65,25 @@ class APIService {
       },
       body: jsonEncode(<String, String>{
         "status": "Order Preparing",
+      }),
+    );
+    if (response.statusCode == 200) {
+      print("Order status changed!");
+    } else {
+      print("Seller status update failed!");
+    }
+    return response;
+  }
+
+  static Future<http.Response> orderReady(int oid) async {
+    final response = await http.put(
+      Uri.parse("http://10.0.2.2:8080/orders/" + oid.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        "Authorization": "Bearer " + Session.token
+      },
+      body: jsonEncode(<String, String>{
+        "status": "Order Ready",
       }),
     );
     if (response.statusCode == 200) {
@@ -99,14 +114,16 @@ class APIService {
   }
 
   static Future<String> fetchName() async {
-    final response = await http.get(
-        Uri.parse("http://10.0.2.2:8080/details/seller"),
-        headers: {"Authorization": "Bearer " + Session.token});
+    try {
+      final response = await http.get(
+          Uri.parse("http://10.0.2.2:8080/details/seller"),
+          headers: {"Authorization": "Bearer " + Session.token});
 
-    if (response.statusCode == 200) {
-      return SellerFromJson(response.body).name;
-    } else {
-      throw Exception();
+      if (response.statusCode == 200) {
+        return SellerFromJson(response.body).name;
+      }
+    } on SocketException {
+      print('error');
     }
   }
 
@@ -131,24 +148,31 @@ class APIService {
   }
 
   static Future<bool> fetchAvail() async {
-    final response = await http.get(
-        Uri.parse("http://10.0.2.2:8080/details/seller"),
-        headers: {"Authorization": "Bearer " + Session.token});
+    try {
+      final response = await http.get(
+          Uri.parse("http://10.0.2.2:8080/details/seller"),
+          headers: {"Authorization": "Bearer " + Session.token});
 
-    if (response.statusCode == 200) {
-      return SellerFromJson(response.body).available;
-    } else {}
+      if (response.statusCode == 200) {
+        return SellerFromJson(response.body).available;
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future<List<Products>> fetchProducts() async {
-    final response = await http.get(
-        Uri.parse("http://10.0.2.2:8080/product/seller"),
-        headers: {"Authorization": "Bearer " + Session.token});
+    try {
+      final response = await http.get(
+          Uri.parse("http://10.0.2.2:8080/product/seller"),
+          headers: {"Authorization": "Bearer " + Session.token});
+      //print(response.statusCode);
 
-    if (response.statusCode == 200) {
-      return productsFromJson(response.body);
-    } else {
-      throw Exception();
+      if (response.statusCode == 200) {
+        return productsFromJson(response.body);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

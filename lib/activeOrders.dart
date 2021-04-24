@@ -1,4 +1,3 @@
-import 'package:Seller_App/session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'orderDetails.dart';
@@ -55,7 +54,7 @@ class _ActiveOrdersState extends State<ActiveOrders>
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StatusUpdate>(builder: (context, value, child) {
+    return Consumer<StatusUpdate>(builder: (context, statusUpdate, child) {
       return Container(
         child: FutureBuilder(
           future: _orders,
@@ -73,12 +72,12 @@ class _ActiveOrdersState extends State<ActiveOrders>
                       url = 'assets/sodi.png';
                       break;
                     case 'Tottus':
-                      url = 'assets/tottus.png';
+                      url = 'assets/LogoTottus.png';
                       break;
                     default:
                   }
 
-                  if (item.status == 'Order Preparing') {
+                  if (item.status == statusUpdate.chosenValue) {
                     return GestureDetector(
                       onTap: () {
                         orders.settingModalBottomSheet(context, item);
@@ -103,14 +102,19 @@ class _ActiveOrdersState extends State<ActiveOrders>
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
-                                      height: 75,
-                                      width: 180,
+                                      height: 50,
+                                      width: 50,
                                       decoration: new BoxDecoration(
                                           borderRadius: BorderRadius.all(
-                                              Radius.circular(20.0)),
+                                              Radius.circular(10.0)),
                                           image: new DecorationImage(
                                               fit: BoxFit.fill,
                                               image: AssetImage(url))),
+                                    ),
+                                    Column(
+                                      children: [
+                                        Container(),
+                                      ],
                                     ),
                                     CircularCountDownTimer(
                                       width: 60.0,
@@ -164,6 +168,12 @@ class _ActiveOrdersState extends State<ActiveOrders>
                                               hoverColor: Colors.blueGrey,
                                               onPressed: () {
                                                 setState(() {});
+                                                Provider.of<StatusUpdate>(
+                                                        context,
+                                                        listen: false)
+                                                    .addToken(item.status);
+                                                APIService.orderReady(
+                                                    item.orderId);
                                               },
                                               color: Colors.black,
                                               shape: RoundedRectangleBorder(

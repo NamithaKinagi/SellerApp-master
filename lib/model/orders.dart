@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'dart:ffi';
+
 List<Orders> ordersFromJson(String str) => List<Orders>.from(json.decode(str).map((x) => Orders.fromJson(x)));
 
 String ordersToJson(List<Orders> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -19,6 +21,7 @@ class Orders {
         this.orderFulfillmentTime,
         this.orderPreparationTime,
         this.orderItems,
+        this.deliveryResource,
     });
 
     int orderId;
@@ -27,9 +30,10 @@ class Orders {
     String status;
     String businessUnit;
     double totalPrice;
-    double orderFulfillmentTime;
+    int orderFulfillmentTime;
     double orderPreparationTime;
     List<OrderItem> orderItems;
+    DeliveryResource deliveryResource;
 
     factory Orders.fromJson(Map<String, dynamic> json) => Orders(
         orderId: json["orderId"],
@@ -41,6 +45,7 @@ class Orders {
         orderFulfillmentTime: json["orderFulfillmentTime"],
         orderPreparationTime: json["orderPreparationTime"],
         orderItems: List<OrderItem>.from(json["orderItems"].map((x) => OrderItem.fromJson(x))),
+        deliveryResource: DeliveryResource.fromJson(json["deliveryResource"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -53,6 +58,7 @@ class Orders {
         "orderFulfillmentTime": orderFulfillmentTime,
         "orderPreparationTime": orderPreparationTime,
         "orderItems": List<dynamic>.from(orderItems.map((x) => x.toJson())),
+        "deliveryResource": deliveryResource.toJson(),
     };
 }
 
@@ -105,6 +111,42 @@ class Location {
     Map<String, dynamic> toJson() => {
         "latitude": latitude,
         "longitude": longitude,
+    };
+}
+
+class DeliveryResource {
+    DeliveryResource({
+        this.driverName,
+        this.phone,
+        this.image,
+        this.licenseNumber,
+        this.threePlName,
+        this.vehicleNumber,
+    });
+
+    String driverName;
+    int phone;
+    String image;
+    String licenseNumber;
+    String threePlName;
+    String vehicleNumber;
+
+    factory DeliveryResource.fromJson(Map<String, dynamic> json) => DeliveryResource(
+        driverName: json["driverName"],
+        phone: json["phone"],
+        image: json["image"],
+        licenseNumber: json["licenseNumber"],
+        threePlName: json["threePLName"],
+        vehicleNumber: json["vehicleNumber"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "driverName": driverName,
+        "phone": phone,
+        "image": image,
+        "licenseNumber": licenseNumber,
+        "threePLName": threePlName,
+        "vehicleNumber": vehicleNumber,
     };
 }
 

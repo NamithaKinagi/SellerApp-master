@@ -1,3 +1,4 @@
+import 'package:Seller_App/Screens/loginScreen.dart';
 import 'package:Seller_App/catalogue.dart';
 import 'package:Seller_App/session.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,7 @@ class _MenuDashboardState extends State<MenuDashboard>
             Row(children: [
               IconButton(
                   icon: Icon(Icons.account_circle, color: Colors.white),
-                  onPressed: null),
+                  onPressed:(){}),
               SizedBox(
                 width: 10,
               ),
@@ -188,6 +189,12 @@ class _MenuDashboardState extends State<MenuDashboard>
               TextButton.icon(
                 onPressed: () {
                   Session.logout();
+                  print(Session.token);
+                  Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
+                          );
                 },
                 icon: Icon(Icons.logout, color: Colors.white),
                 label: Text(

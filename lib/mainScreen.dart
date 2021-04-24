@@ -5,6 +5,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'api/apiService.dart';
 import 'pendingOrders.dart';
 import 'activeOrders.dart';
+import 'providers/statusUpdate.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
+  String _chosenValue;
   double screenwidth, screenheight;
   bool isSwitched = false;
   bool isDrawerOpen = false;
@@ -27,8 +29,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _name=APIService.fetchName();
-    _avail=APIService.fetchAvail();
+    _name = APIService.fetchName();
+    _avail = APIService.fetchAvail();
 
     _controller = AnimationController(vsync: this, duration: duration);
     _scaleAnimation = Tween<double>(begin: 1, end: 0.8).animate(_controller);
@@ -58,10 +60,10 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-      Size size = MediaQuery.of(context).size;
-      screenheight = size.height;
-      screenwidth = size.width;
-
+    Size size = MediaQuery.of(context).size;
+    screenheight = size.height;
+    screenwidth = size.width;
+    return Consumer<StatusUpdate>(builder: (context, value, child) {
       return AnimatedPositioned(
         duration: duration,
         top: 0,
@@ -338,11 +340,56 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    '\nActive Orders',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 14.0, right: 8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '\nActive Orders',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        // IconButton(
+                                        //     icon: Icon(Icons.sort),
+                                        //     onPressed: () {}),
+                                        DropdownButton<String>(
+                                          value: _chosenValue,
+                                          //elevation: 5,
+                                          style: TextStyle(color: Colors.black),
+
+                                          items: <String>[
+                                            'All accepted orders',
+                                            'Order Preparing',
+                                            'Order Ready',
+                                            'Delivery Assigned',
+                                            'Order Timeout',
+                                          ].map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                          hint: Text(
+                                            "Sort the orders",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w300),
+                                          ),
+                                          onChanged: (String value) {
+                                            setState(() {
+                                              _chosenValue = value;
+                                            });
+                                            Provider.of<StatusUpdate>(context,listen: false).sort(_chosenValue);
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   ActiveOrders()
                                 ],
@@ -359,5 +406,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           ),
         ),
       );
+    });
   }
 }

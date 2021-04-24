@@ -27,7 +27,7 @@ class _RootPageState extends State<RootPage> {
       child: FutureBuilder(
           future: readStorage(),
           builder: (ctx, snapshot) {
-            print(snapshot.data);
+            //print(snapshot.data);
             if (snapshot.hasData) {
               if (snapshot.data == "") {
                 return LoginPage();

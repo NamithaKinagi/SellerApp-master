@@ -1,3 +1,4 @@
+import 'package:Seller_App/catalogue.dart';
 import 'package:Seller_App/providers/rejectionReason.dart';
 import 'package:flutter/material.dart';
 import 'package:Seller_App/rootPage.dart';

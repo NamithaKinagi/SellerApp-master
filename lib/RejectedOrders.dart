@@ -6,25 +6,29 @@ import 'package:Seller_App/model/orders.dart';
 import 'home.dart';
 import 'model/orders.dart';
 import 'package:Seller_App/api/apiService.dart';
-import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
-class RejectedOrders extends StatelessWidget {
-  
+class RejectedOrders extends StatefulWidget {
+  @override
+  _RejectedOrdersState createState() => _RejectedOrdersState();
+}
+
+class _RejectedOrdersState extends State<RejectedOrders> {
+  Future<List<dynamic>> _orders;
+
+  @override
+  void initState() {
+    super.initState();
+    _orders = APIService.fetchOrders();
+  }
 
   @override
   Widget build(BuildContext context) {
     final double categoryHeight =
         MediaQuery.of(context).size.height * 0.30 - 50;
-    Future<List<dynamic>> _orders;
-
-    void initstate(){
-      _orders=APIService.fetchOrders();
-    }
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor:  Color(0xff393E43),
+          backgroundColor: Color(0xff393E43),
           title: Text(
             'Rejected Orders',
             style: TextStyle(
@@ -36,16 +40,14 @@ class RejectedOrders extends StatelessWidget {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Home()));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Home()));
               // do something
             },
           )),
-          backgroundColor: Color(0xffCCCCCD),
-      body:
-      
-       SingleChildScrollView(
-                child: Column(
+      backgroundColor: Color(0xffCCCCCD),
+      body: SingleChildScrollView(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             FutureBuilder(
@@ -59,12 +61,13 @@ class RejectedOrders extends StatelessWidget {
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
                       Orders item = snapshot.data[index];
-                     
+
                       if (item.status == 'Order Rejected') {
                         return Card(
                           elevation: 10,
-                          margin: EdgeInsets.symmetric(vertical:10,horizontal:25),
-                          color:Colors.white,
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 25),
+                          color: Colors.white,
                           shadowColor: Colors.black,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,14 +91,14 @@ class RejectedOrders extends StatelessWidget {
                               SizedBox(
                                 height: 5,
                               ),
-                              
+
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(item.customer.name,
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.black)),
                               ),
-                              
+
                               // Container(
                               //   width: 400,
                               //   child: Row(
@@ -122,8 +125,8 @@ class RejectedOrders extends StatelessWidget {
               },
             ),
           ],
+        ),
       ),
-       ),
     );
   }
 }

@@ -12,9 +12,12 @@ class Catalogue extends StatefulWidget {
 
 class _CatalogueState extends State<Catalogue> {
   bool vl = false;
-  Future<List<dynamic>> _products;
-  void init(){
+  Future<List<Products>> _products;
+  @override
+  void initState(){
+    super.initState();
     _products=APIService.fetchProducts();
+    //print(APIService.fetchProducts());
   }
   @override
   Widget build(BuildContext context) {
@@ -91,8 +94,8 @@ class _CatalogueState extends State<Catalogue> {
                                                 padding: 6.0,
                                                 showOnOff: true,
                                                 onToggle: (val) {
-                                                  print(item.pid.toString() +
-                                                      vl.toString());
+                                                  // print(item.pid.toString() +
+                                                  //     vl.toString());
                                                   setState(() {
                                                     vl = val;
                                                     // APIService

@@ -6,7 +6,10 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  shared_preferences: ^2.0.5
+  animated_check: ^1.0.0
+  pinput: ^1.2.0
+  shimmer: ^2.0.0
+  shared_preferences: 
   flutter_switch: ^0.3.0
   intl: ^0.17.0
   cached_network_image: ^3.0.0
@@ -40,6 +43,7 @@ flutter:
     - assets/tottus.png
     - assets/Sodimac.png
     - assets/sodi.png
+    - assets/LogoTottus.png
  
   # fonts:
   #   - family: Schyler

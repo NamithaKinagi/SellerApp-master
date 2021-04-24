@@ -13,7 +13,7 @@ class Session {
   static set token(String token) => _pref?.setString('token', token);
 
   static logout() {
-    token = null;
+    //token = "";
     _pref?.clear();
   }
 }
