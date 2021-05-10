@@ -4,8 +4,6 @@
 
 import 'dart:convert';
 
-import 'dart:ffi';
-
 List<Orders> ordersFromJson(String str) => List<Orders>.from(json.decode(str).map((x) => Orders.fromJson(x)));
 
 String ordersToJson(List<Orders> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
@@ -18,10 +16,12 @@ class Orders {
         this.status,
         this.businessUnit,
         this.totalPrice,
+        this.totalQuantity,
         this.orderFulfillmentTime,
         this.orderPreparationTime,
         this.orderItems,
         this.deliveryResource,
+        this.orderStatusHistory,
     });
 
     int orderId;
@@ -30,10 +30,12 @@ class Orders {
     String status;
     String businessUnit;
     double totalPrice;
-    int orderFulfillmentTime;
+    int totalQuantity;
+    double orderFulfillmentTime;
     double orderPreparationTime;
     List<OrderItem> orderItems;
     DeliveryResource deliveryResource;
+    OrderStatusHistory orderStatusHistory;
 
     factory Orders.fromJson(Map<String, dynamic> json) => Orders(
         orderId: json["orderId"],
@@ -42,10 +44,12 @@ class Orders {
         status: json["status"],
         businessUnit: json["businessUnit"],
         totalPrice: json["totalPrice"],
+        totalQuantity: json["totalQuantity"],
         orderFulfillmentTime: json["orderFulfillmentTime"],
         orderPreparationTime: json["orderPreparationTime"],
         orderItems: List<OrderItem>.from(json["orderItems"].map((x) => OrderItem.fromJson(x))),
         deliveryResource: DeliveryResource.fromJson(json["deliveryResource"]),
+        orderStatusHistory: OrderStatusHistory.fromJson(json["orderStatusHistory"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -55,10 +59,12 @@ class Orders {
         "status": status,
         "businessUnit": businessUnit,
         "totalPrice": totalPrice,
+        "totalQuantity": totalQuantity,
         "orderFulfillmentTime": orderFulfillmentTime,
         "orderPreparationTime": orderPreparationTime,
         "orderItems": List<dynamic>.from(orderItems.map((x) => x.toJson())),
         "deliveryResource": deliveryResource.toJson(),
+        "orderStatusHistory": orderStatusHistory.toJson(),
     };
 }
 
@@ -119,22 +125,25 @@ class DeliveryResource {
         this.driverName,
         this.phone,
         this.image,
+        this.otp,
         this.licenseNumber,
         this.threePlName,
         this.vehicleNumber,
     });
 
-    String driverName;
+    dynamic driverName;
     int phone;
-    String image;
-    String licenseNumber;
-    String threePlName;
-    String vehicleNumber;
+    dynamic image;
+    dynamic otp;
+    dynamic licenseNumber;
+    dynamic threePlName;
+    dynamic vehicleNumber;
 
     factory DeliveryResource.fromJson(Map<String, dynamic> json) => DeliveryResource(
         driverName: json["driverName"],
         phone: json["phone"],
         image: json["image"],
+        otp: json["otp"],
         licenseNumber: json["licenseNumber"],
         threePlName: json["threePLName"],
         vehicleNumber: json["vehicleNumber"],
@@ -144,6 +153,7 @@ class DeliveryResource {
         "driverName": driverName,
         "phone": phone,
         "image": image,
+        "otp": otp,
         "licenseNumber": licenseNumber,
         "threePLName": threePlName,
         "vehicleNumber": vehicleNumber,
@@ -195,5 +205,41 @@ class OrderItem {
         "basic_etc": basicEtc,
         "description": description,
         "productName": productName,
+    };
+}
+
+class OrderStatusHistory {
+    OrderStatusHistory({
+        this.orderPlaced,
+        this.orderPreparing,
+        this.orderReady,
+        this.orderTimeout,
+        this.orderHandover,
+        this.orderFulfilled,
+    });
+
+    DateTime orderPlaced;
+    DateTime orderPreparing;
+    dynamic orderReady;
+    dynamic orderTimeout;
+    dynamic orderHandover;
+    dynamic orderFulfilled;
+
+    factory OrderStatusHistory.fromJson(Map<String, dynamic> json) => OrderStatusHistory(
+        orderPlaced: DateTime.parse(json["orderPlaced"]),
+        orderPreparing: json["orderPreparing"]==null?null:DateTime.parse(json["orderPreparing"]),
+        orderReady: json["orderReady"],
+        orderTimeout: json["orderTimeout"],
+        orderHandover: json["orderHandover"],
+        orderFulfilled: json["orderFulfilled"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "orderPlaced": orderPlaced.toIso8601String(),
+        "orderPreparing": orderPreparing,
+        "orderReady": orderReady,
+        "orderTimeout": orderTimeout,
+        "orderHandover": orderHandover,
+        "orderFulfilled": orderFulfilled,
     };
 }

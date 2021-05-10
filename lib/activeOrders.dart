@@ -1,11 +1,14 @@
-import 'package:flutter/cupertino.dart';
+import 'package:Seller_App/widgets/ribbon.dart';
 import 'package:flutter/material.dart';
-import 'orderDetails.dart';
-import 'providers/statusUpdate.dart';
+import 'APIServices/APIServices.dart';
+import 'App_configs/app_configs.dart';
+import 'widgets/cards.dart';
+import 'models/orders.dart';
+import 'widgets/orderDetails.dart';
+import 'widgets/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:circular_countdown_timer/circular_countdown_timer.dart';
-import 'model/orders.dart';
-import 'api/apiService.dart';
+import 'providers/orderUpdate.dart';
+import 'package:slide_countdown_clock/slide_countdown_clock.dart';
 
 class ActiveOrders extends StatefulWidget {
   @override
@@ -14,244 +17,277 @@ class ActiveOrders extends StatefulWidget {
 
 class _ActiveOrdersState extends State<ActiveOrders>
     with SingleTickerProviderStateMixin {
-  CountDownController _controller = CountDownController();
-  String url;
-  OrderDetail orders = new OrderDetail();
-  AnimationController controllerOne;
-  Animation<Color> animationOne;
-  Animation<Color> animationTwo;
-  Future<List<dynamic>> _orders;
+  OrderDetail orderItem = new OrderDetail();
+  TabController _controller;
+  DateTime subDt;
   @override
   void initState() {
-    // TODO: implement initState
-    //
     super.initState();
-    _orders = APIService.fetchOrders();
-
-    controllerOne =
-        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
-    animationOne = ColorTween(begin: Colors.black38, end: Colors.white24)
-        .animate(controllerOne);
-    animationTwo = ColorTween(begin: Colors.white24, end: Colors.black38)
-        .animate(controllerOne);
-    controllerOne.forward();
-    controllerOne.addListener(() {
-      if (controllerOne.status == AnimationStatus.completed) {
-        controllerOne.reverse();
-      } else if (controllerOne.status == AnimationStatus.dismissed) {
-        controllerOne.forward();
-      }
-      this.setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    controllerOne.dispose();
+    _controller = new TabController(length: 4, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StatusUpdate>(builder: (context, statusUpdate, child) {
-      return Container(
-        child: FutureBuilder(
-          future: _orders,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                itemCount: snapshot.data.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  Orders item = snapshot.data[index];
-                  switch (item.businessUnit) {
-                    case 'Sodimac':
-                      url = 'assets/sodi.png';
-                      break;
-                    case 'Tottus':
-                      url = 'assets/LogoTottus.png';
-                      break;
-                    default:
-                  }
+    return Consumer<Update>(builder: (context, Update orders, child) {
+      if (orders.activeOrders.isEmpty) {
+        return Container();
+      }
+      return Column(
+        children: [
+          Center(
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Active Orders',
+                  style: Theme.of(context).textTheme.headline6,
+                )),
+          ),
+          new Container(
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            //decoration: new BoxDecoration(color: Colors.white),
+            child: new TabBar(
+              controller: _controller,
+              tabs: [
+                new Tab(
+                  text: 'All orders',
+                ),
+                new Tab(
+                  text: ('Preparing'),
+                ),
+                new Tab(
+                  text: 'Ready',
+                ),
+                new Tab(
+                  text: 'Timedout',
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 500,
+            padding: EdgeInsets.only(top: 10),
+            child: new TabBarView(
+              controller: _controller,
+              children: <Widget>[
+                new Container(child: listOrders('All accepted orders')),
+                new Container(child: listOrders(AppConfig.acceptStatus)),
+                new Container(child: listOrders(AppConfig.markAsDone)),
+                new Container(child: listOrders(AppConfig.timeout)),
+              ],
+            ),
+          ),
+        ],
+      );
+    });
+  }
 
-                  if (item.status == statusUpdate.chosenValue) {
-                    return GestureDetector(
-                      onTap: () {
-                        orders.settingModalBottomSheet(context, item);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          elevation: 10,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          color: Colors.grey[200],
-                          shadowColor: Colors.black,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+  listOrders(chosenValue) {
+    return Consumer<Update>(builder: (context, Update orders, child) {
+      String url;
+      return ListView.builder(
+          scrollDirection: Axis.vertical,
+          itemCount: orders.activeOrders.length,
+          //physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            Orders active = orders.activeOrders[index];
+            switch (active.businessUnit) {
+              case 'Sodimac':
+                url = 'assets/sodimacLogo.jpeg';
+                break;
+              case 'Tottus':
+                url = 'assets/tottusLogo.jpeg';
+                break;
+              default:
+            }
+            if (chosenValue == 'All accepted orders') {
+              return activeOrders(active, url, orders, index);
+            } else {
+              if (active.status == chosenValue) {
+                return activeOrders(active, url, orders, index);
+              } else {
+                return Container();
+              }
+            }
+          });
+    });
+  }
+
+  activeOrders(Orders active, url, orders, index) {
+    DateTime currDt = DateTime.now();
+    subDt = active.orderStatusHistory.orderPreparing ?? currDt;
+    int diffDt = currDt.difference(subDt).inSeconds;
+    bool done = false;
+    double dur;
+    if (active.orderPreparationTime * 60 >= diffDt.toDouble()) {
+      dur = active.orderPreparationTime * 60 - diffDt.toDouble();
+    } else
+      dur = 0;
+
+    return Consumer<Update>(builder: (context, Update orders, child) {
+      return GestureDetector(
+        onTap: () {
+          orderItem.settingModalBottomSheet(context, active, index);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
+          child: Stack(children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Cards(
+                radius: BorderRadius.circular(20),
+                margin: EdgeInsets.all(3),
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0, top: 50),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: 50,
-                                      width: 50,
-                                      decoration: new BoxDecoration(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10.0)),
-                                          image: new DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage(url))),
-                                    ),
-                                    Column(
-                                      children: [
-                                        Container(),
-                                      ],
-                                    ),
-                                    CircularCountDownTimer(
-                                      width: 60.0,
-                                      height: 60.0,
-                                      duration:
-                                          item.orderPreparationTime.toInt() *
-                                              60,
-                                      fillColor: Colors.amber,
-                                      ringColor: Colors.white,
-                                      controller: _controller,
-                                      backgroundColor: Colors.white54,
-                                      strokeWidth: 5.0,
-                                      strokeCap: StrokeCap.round,
-                                      isTimerTextShown: true,
-                                      isReverse: true,
-                                      onComplete: () {},
-                                      textStyle: TextStyle(
-                                          fontSize: 15.0, color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  '#00${item.orderId}',
-                                  style: TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  clipBehavior: Clip.hardEdge,
+                                  width: 60,
+                                  height: 60,
+                                  child: Image(
+                                    image: new AssetImage(url),
+                                  ),
                                 ),
                                 SizedBox(
-                                  height: 5,
+                                  width: 15,
                                 ),
-                                Text(
-                                  item.customer.name,
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                const Divider(
-                                  height: 5,
-                                  thickness: 3,
-                                  indent: 10,
-                                  endIndent: 40,
-                                ),
-                                Container(
-                                  width: 400,
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 5),
-                                        child: Row(
+                                Text('#00${active.orderId}',
+                                    style:
+                                        Theme.of(context).textTheme.headline6),
+                                (active.status == 'Order Preparing')
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 30.0),
+                                        child: Column(
                                           children: [
-                                            RaisedButton(
-                                              hoverColor: Colors.blueGrey,
-                                              onPressed: () {
-                                                setState(() {});
-                                                Provider.of<StatusUpdate>(
-                                                        context,
-                                                        listen: false)
-                                                    .addToken(item.status);
-                                                APIService.orderReady(
-                                                    item.orderId);
+                                            SlideCountdownClock(
+                                              duration: Duration(
+                                                  seconds: dur.toInt()),
+                                              slideDirection: SlideDirection.Up,
+                                              separator: ":",
+                                              textStyle: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                              shouldShowDays: false,
+                                              onDone: () {
+                                                setState(() {
+                                                  done = true;
+                                                });
+                                                orders.activeOrdersUpdate(
+                                                     index,AppConfig.timeout);
+                                                APIServices.changeOrderStatus(
+                                                    active.orderId, AppConfig.timeout);
                                               },
-                                              color: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          15)),
-                                              child: Text("Mark as Done",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
                                             ),
-                                            SizedBox(width: 5),
-                                            RaisedButton(
-                                              hoverColor: Colors.blueGrey,
-                                              onPressed: () {},
-                                              color: Colors.black,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          15)),
-                                              child: Text("Update ETC",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                            Text(
+                                              "HH    MM    SS",
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                      )
+                                    : Container()
                               ],
                             ),
                           ),
-                        ),
+                          SizedBox(width: 20),
+                        ],
                       ),
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              );
-            }
-            return ShaderMask(
-                shaderCallback: (rect) {
-                  return LinearGradient(
-                          tileMode: TileMode.mirror,
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [animationOne.value, animationTwo.value])
-                      .createShader(rect, textDirection: TextDirection.ltr);
-                },
-                child: Container(
-                  child: Center(
-                    child: Column(
+                    ),
+                    Row(
                       children: [
-                        Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          decoration: (BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20))),
+                        Text(
+                          productName(active.orderItems),
+                          style: Theme.of(context).textTheme.caption,
                         ),
-                        SizedBox(height: 20),
-                        Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          decoration: (BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20))),
-                        ),
+                        Text(
+                          '\$' + active.totalPrice.toInt().toString(),
+                          style: Theme.of(context).textTheme.caption,
+                        )
                       ],
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Container(
+                          height: 2,
+                          width: MediaQuery.of(context).size.width,
+                          color: Theme.of(context).dividerColor),
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            active.status == 'Order Preparing'
+                                ? Expanded(
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          orders.activeOrdersUpdate(
+                                              index, AppConfig.markAsDone);
+                                          APIServices.changeOrderStatus(
+                                              active.orderId,
+                                              AppConfig.markAsDone);
+                                        },
+                                        child: Text(
+                                          'Mark ready',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .button,
+                                        )),
+                                  )
+                                : SizedBox(width: 0),
+                            SizedBox(width: 8),
+                            active.status != 'Order Complete'
+                                ? Expanded(
+                                    child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text(
+                                          'Update ETC',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .button,
+                                        )),
+                                  )
+                                : Container(),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+                left: 3,
+                top: 30,
+                child: RibbonShape(
+                  child: Text(
+                    active.status,
+                    style: Theme.of(context).textTheme.button,
                   ),
-                ));
-          },
+                  color: active.status == 'Order Ready'
+                      ? AppConfig.readyColor
+                      : active.status == 'Order Complete'
+                          ? AppConfig.completedColor
+                          : AppConfig.preparingColor,
+                ))
+          ]),
         ),
       );
     });

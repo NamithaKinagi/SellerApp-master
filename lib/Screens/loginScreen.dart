@@ -1,11 +1,9 @@
-import 'package:Seller_App/home.dart';
+import 'package:Seller_App/Home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/api/apiService.dart';
-import 'package:Seller_App/model/loginModel.dart';
-import 'package:provider/provider.dart';
-import '../progressHUD.dart';
-import 'package:Seller_App/session.dart';
+import 'package:Seller_App/APIServices/APIServices.dart';
+import 'package:Seller_App/models/loginModel.dart';
+import 'package:Seller_App/widgets/progressHUD.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -135,13 +133,12 @@ class _LoginPageState extends State<LoginPage> {
                               vertical: 12, horizontal: 80),
                           onPressed: () {
                             if (validateAndSave()) {
-                              print(loginRequestModel.toJson());
-
                               setState(() {
                                 isApiCallProcess = true;
                               });
 
-                              APIService.login(loginRequestModel).then((value) {
+                              APIServices.login(loginRequestModel)
+                                  .then((value) {
                                 if (value != null) {
                                   setState(() {
                                     isApiCallProcess = false;
@@ -155,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => Home(),
+                                          builder: (context) => HomeScreen(),
                                         ),
                                         (route) => false);
                                   } else {

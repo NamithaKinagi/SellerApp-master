@@ -1,7 +1,13 @@
+
 import 'package:flutter/material.dart';
+import 'package:Seller_App/Home.dart';
+
 import 'package:animated_check/animated_check.dart';
 
 class SubmitPage extends StatefulWidget {
+  final int oid;
+  const SubmitPage({Key key, this.oid,}) : super(key: key);
+
   @override
   _SubmitPageState createState() => _SubmitPageState();
 }
@@ -14,10 +20,9 @@ class _SubmitPageState extends State<SubmitPage>
   @override
   void initState() {
     super.initState();
-    
 
     _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2));
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
 
     _animation = new Tween<double>(begin: 0, end: 1).animate(
         new CurvedAnimation(
@@ -27,6 +32,7 @@ class _SubmitPageState extends State<SubmitPage>
 
   @override
   Widget build(BuildContext context) {
+    
     return Material(
       child: Scaffold(
         appBar: AppBar(
@@ -39,7 +45,9 @@ class _SubmitPageState extends State<SubmitPage>
               color: Colors.black,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
             },
           ),
         ),
@@ -57,7 +65,7 @@ class _SubmitPageState extends State<SubmitPage>
               ),
               Container(
                   child: Text(
-                '#007',
+                '#00' + widget.oid.toString(),
                 style: TextStyle(
                     fontSize: 54,
                     fontWeight: FontWeight.bold,
@@ -67,11 +75,9 @@ class _SubmitPageState extends State<SubmitPage>
                 height: 45,
               ),
               Container(
-                  child: Center(
-                    child: Text('Order handover completed',
-                        style: TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold)),
-                  )),
+                  child: Text('Order Handover Successful',
+                      style: TextStyle(
+                          fontSize: 30, fontWeight: FontWeight.bold))),
               Container(
                   child: AnimatedCheck(
                 progress: _animation,

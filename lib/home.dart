@@ -1,26 +1,37 @@
-import 'package:Seller_App/mainScreen.dart';
+import 'package:Seller_App/providers/seller.dart';
 import 'package:flutter/material.dart';
-import 'package:Seller_App/drawer.dart';
+import 'providers/products.dart';
+import 'screens/mainScreen.dart';
+import 'screens/drawer.dart';
+import 'package:provider/provider.dart';
+import 'providers/orderUpdate.dart';
 
-class Home extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeState extends State<Home> {
-  double screenwidth, screenheight;
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<Update>(context, listen: false).ordersAdded();
+    Provider.of<SellerDetail>(context, listen: false).fetchSeller();
+    Provider.of<Product>(context, listen: false).addProducts();
+
+  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    screenheight = size.height;
-    screenwidth = size.width;
-      return Scaffold(
-        body: Stack(
-          children: [
-            MenuDashboard(),
-            MainScreen(),
-          ],
-        ),
-      );
+    return Material(
+      child: Scaffold(
+          body: Stack(
+        children: [
+          MenuDashboard(),
+          MainScreen(),
+        ],
+      )),
+    );
   }
 }
